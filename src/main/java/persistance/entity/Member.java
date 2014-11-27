@@ -1,6 +1,7 @@
 package persistance.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,11 +10,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import persistance.entity.tuple.CollectionTuple;
 
 /**
  * Entity implementation class for Entity: Member
@@ -22,68 +27,70 @@ import javax.persistence.TemporalType;
 
 @Entity
 public class Member implements Serializable {
-	
-    private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue
-    @Column(updatable = false, nullable = false)
-    private Long id;
+	private static final long serialVersionUID = 1L;
 
-    @Column(name = "last_name", updatable = true, nullable = false)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "member_sequence")
+	@SequenceGenerator(name = "member_sequence", sequenceName = "member_sequence", allocationSize = 1)
+	@Column(updatable = false, nullable = false)
+	private Long id;
+
+	@Column(updatable = true, nullable = false)
 	private String lastName;
-	
-	@Column(name = "first_name", updatable = false, nullable = false)
+
+	@Column(updatable = false, nullable = false)
 	private String firstName;
-	
+
 	@Column(updatable = true, nullable = false)
 	private String address;
-	
-	@Column(name = "additional_information", updatable = true, nullable = true)
+
+	@Column(updatable = true, nullable = true)
 	private String additionalInformation;
-	
-	@Column(name = "zip_code", updatable = true, nullable = false)
+
+	@Column(updatable = true, nullable = false)
 	private String zipCode;
-	
+
 	@Column(updatable = true, nullable = false)
 	private String city;
-	
+
 	@Column(updatable = true, nullable = false)
 	private String country;
-	
+
 	@Column(updatable = true, nullable = false)
 	private String email;
-	
+
 	@Column(updatable = true, nullable = false)
 	private String username;
-	
+
 	@Column(updatable = true, nullable = false)
 	private String password;
-	
-	@Temporal(TemporalType.DATE)
-	@Column(name = "DATE_REGISTRATION", updatable = false, nullable = false)
-	private java.util.Date dateRegistration;
-	
-	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="member")
-	private Set<Deck> decks = new HashSet<Deck>();
-	
-	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="member")
-	private Set<Combo> combos = new HashSet<Combo>();
-	
-	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="member")
-	private Set<Purchase> purchases = new HashSet<Purchase>();
-	
-	@OneToOne(optional=false, mappedBy="member")
-	@Column(name = "card_member", updatable = true, nullable = false)
-	private CardMember cardMember;
-	
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Temporal(TemporalType.DATE)
+	@Column(updatable = false, nullable = false)
+	private Date creationDate;
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "member")
+	private Set<Deck> decks = new HashSet<Deck>();
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "member")
+	private Set<Combo> combos = new HashSet<Combo>();
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "member")
+	private Set<Purchase> purchases = new HashSet<Purchase>();
+
+	@OneToMany
+	/* @JoinTable(joinColumns = @JoinColumn(name = "MEMBER", nullable = false)) */
+	@JoinColumn(name = "member_id", nullable = false)
+	private Set<CollectionTuple> collection;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getLastName() {
 		return lastName;
@@ -165,12 +172,12 @@ public class Member implements Serializable {
 		this.password = password;
 	}
 
-	public java.util.Date getDateRegistration() {
-		return dateRegistration;
+	public Date getCreationDate() {
+		return creationDate;
 	}
 
-	public void setDateRegistration(java.util.Date dateRegistration) {
-		this.dateRegistration = dateRegistration;
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 
 	public Set<Deck> getDecks() {
@@ -196,4 +203,13 @@ public class Member implements Serializable {
 	public void setPurchases(Set<Purchase> purchases) {
 		this.purchases = purchases;
 	}
+
+	public Set<CollectionTuple> getCollection() {
+		return collection;
+	}
+
+	public void setCollection(Set<CollectionTuple> collection) {
+		this.collection = collection;
+	}
+
 }

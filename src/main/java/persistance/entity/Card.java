@@ -1,7 +1,6 @@
 package persistance.entity;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -10,8 +9,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
 
 /**
  * Entity implementation class for Entity: Card
@@ -24,26 +21,25 @@ public class Card implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue
 	@Column(updatable = false, nullable = false)
 	private Long id;
 
 	@Column(updatable = false, nullable = false)
 	private String name;
 
-	@Column(updatable = false, nullable = false)
+	@Column(updatable = false, nullable = true)
 	private String picturePath;
 
 	@Column(updatable = false, nullable = false)
 	private String type;
 
-	@Column(updatable = false, nullable = false)
+	@Column(updatable = false, nullable = true)
 	private String edition;
 
 	@Column(updatable = false, nullable = false)
 	private String text;
 
-	@Column(name = "flavor_text", updatable = false, nullable = false)
+	@Column(updatable = false, nullable = false)
 	private String flavorText;
 
 	public enum Rarity {
@@ -57,16 +53,16 @@ public class Card implements Serializable {
 	@Column(updatable = false, nullable = false)
 	private String artist;
 
-	@Column(updatable = false, nullable = false)
+	@Column(updatable = false, nullable = true)
 	private Integer power;
 
-	@Column(updatable = false, nullable = false)
+	@Column(updatable = false, nullable = true)
 	private Integer toughness;
 
 	@Column(updatable = false, nullable = false)
 	private Boolean x;
 
-	@Column(name = "converted_mana_cost", updatable = false, nullable = false)
+	@Column(updatable = false, nullable = false)
 	private Integer convertedManaCost;
 
 	@Column(updatable = true, nullable = false)
@@ -74,9 +70,10 @@ public class Card implements Serializable {
 
 	@Embedded
 	private Color color;
-	
-	@OneToMany(mappedBy="card")
-    private Set<CardMember> cardMember ;
+
+	/*
+	 * @OneToMany(mappedBy="card") private Set<CardMember> cardMember ;
+	 */
 
 	// ManyToMany decks (+ cardsQuantity);
 

@@ -1,16 +1,23 @@
 package persistance.entity;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import persistance.entity.tuple.DeckTuple;
 
 /**
  * Entity implementation class for Entity: Deck
@@ -21,30 +28,35 @@ import javax.persistence.TemporalType;
 public class Deck implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-    @GeneratedValue
-    @Column(updatable = false, nullable = false)
-    private Long id;
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "deck_sequence")
+	@SequenceGenerator(name = "deck_sequence", sequenceName = "deck_sequence", allocationSize = 1)
+	@Column(updatable = false, nullable = false)
+	private Long id;
+
 	@Column(updatable = true, nullable = false)
 	private String name;
-	
+
 	@Column(updatable = true, nullable = true)
 	private String description;
-	
+
 	@Temporal(TemporalType.DATE)
-	@Column(name = "DATE_CREATION", updatable = false, nullable = false)
-	private java.util.Date dateCreation;
-	
+	@Column(updatable = false, nullable = false)
+	private Date creationDate;
+
 	@Embedded
 	private Color color;
-	
+
 	@ManyToOne
-	@JoinColumn(name="MEMBER_ID", updatable = false, nullable=false)
+	@JoinColumn(updatable = false, nullable = false)
 	private Member member;
-	
-	//ManyToMany cards (+ cardsQuantity + favorite);
+
+	@OneToMany
+	@JoinColumn(name = "deck_id", nullable = false)
+	private Set<DeckTuple> cards;
+
+	// ManyToMany cards (+ cardsQuantity + favorite);
 
 	public Long getId() {
 		return id;
@@ -70,12 +82,12 @@ public class Deck implements Serializable {
 		this.description = description;
 	}
 
-	public java.util.Date getDateCreation() {
-		return dateCreation;
+	public Date getCreationDate() {
+		return creationDate;
 	}
 
-	public void setDateCreation(java.util.Date dateCreation) {
-		this.dateCreation = dateCreation;
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 
 	public Color getColor() {
@@ -93,4 +105,13 @@ public class Deck implements Serializable {
 	public void setMember(Member member) {
 		this.member = member;
 	}
+
+	public Set<DeckTuple> getCards() {
+		return cards;
+	}
+
+	public void setCards(Set<DeckTuple> cards) {
+		this.cards = cards;
+	}
+
 }

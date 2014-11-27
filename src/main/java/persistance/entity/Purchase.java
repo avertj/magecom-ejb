@@ -1,15 +1,22 @@
 package persistance.entity;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import persistance.entity.tuple.PurchaseTuple;
 
 /**
  * Entity implementation class for Entity: Purchase
@@ -22,23 +29,24 @@ public class Purchase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "purchase_sequence")
+	@SequenceGenerator(name = "purchase_sequence", sequenceName = "purchase_sequence", allocationSize = 1)
 	@Column(updatable = false, nullable = false)
 	private Long id;
 
-	@Column(name = "last_name", updatable = false, nullable = false)
+	@Column(updatable = false, nullable = false)
 	private String lastName;
 
-	@Column(name = "first_name", updatable = false, nullable = false)
+	@Column(updatable = false, nullable = false)
 	private String firstName;
 
 	@Column(updatable = false, nullable = false)
 	private String address;
 
-	@Column(name = "additional_information", updatable = false, nullable = true)
+	@Column(updatable = false, nullable = true)
 	private String additionalInformation;
 
-	@Column(name = "zip_code", updatable = false, nullable = false)
+	@Column(updatable = false, nullable = false)
 	private String zipCode;
 
 	@Column(updatable = false, nullable = false)
@@ -51,13 +59,17 @@ public class Purchase implements Serializable {
 	private Float total;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "DATE_PURCHASE", updatable = false, nullable = false)
-	private java.util.Date datePurchase;
+	@Column(updatable = false, nullable = false)
+	private Date creationDate;
 
 	@ManyToOne
-	@JoinColumn(name="MEMBER_ID", updatable = false, nullable=false)
+	@JoinColumn(updatable = false, nullable = false)
 	private Member member;
-	
+
+	@OneToMany
+	@JoinColumn(name = "purchase_id", nullable = false)
+	private Set<PurchaseTuple> cards;
+
 	// ManyToMany cards (+ cardsQuantity);
 
 	public Long getId() {
@@ -132,12 +144,12 @@ public class Purchase implements Serializable {
 		this.total = total;
 	}
 
-	public java.util.Date getDatePurchase() {
-		return datePurchase;
+	public Date getCreationDate() {
+		return creationDate;
 	}
 
-	public void setDatePurchase(java.util.Date datePurchase) {
-		this.datePurchase = datePurchase;
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 
 	public Member getMember() {
@@ -147,4 +159,13 @@ public class Purchase implements Serializable {
 	public void setMember(Member member) {
 		this.member = member;
 	}
+
+	public Set<PurchaseTuple> getCards() {
+		return cards;
+	}
+
+	public void setCards(Set<PurchaseTuple> cards) {
+		this.cards = cards;
+	}
+
 }
