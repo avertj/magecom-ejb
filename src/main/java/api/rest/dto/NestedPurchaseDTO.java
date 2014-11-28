@@ -18,7 +18,7 @@ public class NestedPurchaseDTO implements Serializable
    private String city;
    private String country;
    private Float total;
-   private java.util.Date datePurchase;
+   private Date creationDate;
 
    public NestedPurchaseDTO()
    {
@@ -37,7 +37,7 @@ public class NestedPurchaseDTO implements Serializable
          this.city = entity.getCity();
          this.country = entity.getCountry();
          this.total = entity.getTotal();
-         this.datePurchase = entity.getDatePurchase();
+         this.creationDate = entity.getCreationDate();
       }
    }
 
@@ -71,7 +71,7 @@ public class NestedPurchaseDTO implements Serializable
       entity.setCity(this.city);
       entity.setCountry(this.country);
       entity.setTotal(this.total);
-      entity.setDatePurchase(this.datePurchase);
+      entity.setCreationDate(this.creationDate);
       entity = em.merge(entity);
       return entity;
    }
@@ -166,13 +166,13 @@ public class NestedPurchaseDTO implements Serializable
       this.total = total;
    }
 
-   public Date getDatePurchase()
+   public Date getCreationDate()
    {
-      return this.datePurchase;
+      return this.creationDate;
    }
 
-   public void setDatePurchase(final java.util.Date datePurchase)
+   public void setCreationDate(final Date creationDate)
    {
-      this.datePurchase = datePurchase;
+      this.creationDate = creationDate;
    }
 }

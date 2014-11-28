@@ -61,7 +61,7 @@ public class PurchaseEndpoint
    @Produces("application/json")
    public Response findById(@PathParam("id") Long id)
    {
-      TypedQuery<Purchase> findByIdQuery = em.createQuery("SELECT DISTINCT p FROM Purchase p LEFT JOIN FETCH p.member WHERE p.id = :entityId ORDER BY p.id", Purchase.class);
+      TypedQuery<Purchase> findByIdQuery = em.createQuery("SELECT DISTINCT p FROM Purchase p LEFT JOIN FETCH p.member LEFT JOIN FETCH p.cards WHERE p.id = :entityId ORDER BY p.id", Purchase.class);
       findByIdQuery.setParameter("entityId", id);
       Purchase entity;
       try
@@ -84,7 +84,7 @@ public class PurchaseEndpoint
    @Produces("application/json")
    public List<PurchaseDTO> listAll(@QueryParam("start") Integer startPosition, @QueryParam("max") Integer maxResult)
    {
-      TypedQuery<Purchase> findAllQuery = em.createQuery("SELECT DISTINCT p FROM Purchase p LEFT JOIN FETCH p.member ORDER BY p.id", Purchase.class);
+      TypedQuery<Purchase> findAllQuery = em.createQuery("SELECT DISTINCT p FROM Purchase p LEFT JOIN FETCH p.member LEFT JOIN FETCH p.cards ORDER BY p.id", Purchase.class);
       if (startPosition != null)
       {
          findAllQuery.setFirstResult(startPosition);
@@ -108,7 +108,7 @@ public class PurchaseEndpoint
    @Consumes("application/json")
    public Response update(@PathParam("id") Long id, PurchaseDTO dto)
    {
-      TypedQuery<Purchase> findByIdQuery = em.createQuery("SELECT DISTINCT p FROM Purchase p LEFT JOIN FETCH p.member WHERE p.id = :entityId ORDER BY p.id", Purchase.class);
+      TypedQuery<Purchase> findByIdQuery = em.createQuery("SELECT DISTINCT p FROM Purchase p LEFT JOIN FETCH p.member LEFT JOIN FETCH p.cards WHERE p.id = :entityId ORDER BY p.id", Purchase.class);
       findByIdQuery.setParameter("entityId", id);
       Purchase entity;
       try

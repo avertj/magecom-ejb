@@ -13,7 +13,7 @@ public class NestedComboDTO implements Serializable
    private Long id;
    private String name;
    private String description;
-   private java.util.Date dateCreation;
+   private Date creationDate;
    private ColorDTO color;
 
    public NestedComboDTO()
@@ -27,7 +27,7 @@ public class NestedComboDTO implements Serializable
          this.id = entity.getId();
          this.name = entity.getName();
          this.description = entity.getDescription();
-         this.dateCreation = entity.getDateCreation();
+         this.creationDate = entity.getCreationDate();
          this.color = new ColorDTO(entity.getColor());
       }
    }
@@ -56,7 +56,7 @@ public class NestedComboDTO implements Serializable
       }
       entity.setName(this.name);
       entity.setDescription(this.description);
-      entity.setDateCreation(this.dateCreation);
+      entity.setCreationDate(this.creationDate);
       if (this.color != null)
       {
          entity.setColor(this.color.fromDTO(entity.getColor(), em));
@@ -95,14 +95,14 @@ public class NestedComboDTO implements Serializable
       this.description = description;
    }
 
-   public Date getDateCreation()
+   public Date getCreationDate()
    {
-      return this.dateCreation;
+      return this.creationDate;
    }
 
-   public void setDateCreation(final java.util.Date dateCreation)
+   public void setCreationDate(final Date creationDate)
    {
-      this.dateCreation = dateCreation;
+      this.creationDate = creationDate;
    }
 
    public ColorDTO getColor()

@@ -61,7 +61,7 @@ public class DeckEndpoint
    @Produces("application/json")
    public Response findById(@PathParam("id") Long id)
    {
-      TypedQuery<Deck> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Deck d LEFT JOIN FETCH d.member WHERE d.id = :entityId ORDER BY d.id", Deck.class);
+      TypedQuery<Deck> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Deck d LEFT JOIN FETCH d.member LEFT JOIN FETCH d.cards WHERE d.id = :entityId ORDER BY d.id", Deck.class);
       findByIdQuery.setParameter("entityId", id);
       Deck entity;
       try
@@ -84,7 +84,7 @@ public class DeckEndpoint
    @Produces("application/json")
    public List<DeckDTO> listAll(@QueryParam("start") Integer startPosition, @QueryParam("max") Integer maxResult)
    {
-      TypedQuery<Deck> findAllQuery = em.createQuery("SELECT DISTINCT d FROM Deck d LEFT JOIN FETCH d.member ORDER BY d.id", Deck.class);
+      TypedQuery<Deck> findAllQuery = em.createQuery("SELECT DISTINCT d FROM Deck d LEFT JOIN FETCH d.member LEFT JOIN FETCH d.cards ORDER BY d.id", Deck.class);
       if (startPosition != null)
       {
          findAllQuery.setFirstResult(startPosition);
@@ -108,7 +108,7 @@ public class DeckEndpoint
    @Consumes("application/json")
    public Response update(@PathParam("id") Long id, DeckDTO dto)
    {
-      TypedQuery<Deck> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Deck d LEFT JOIN FETCH d.member WHERE d.id = :entityId ORDER BY d.id", Deck.class);
+      TypedQuery<Deck> findByIdQuery = em.createQuery("SELECT DISTINCT d FROM Deck d LEFT JOIN FETCH d.member LEFT JOIN FETCH d.cards WHERE d.id = :entityId ORDER BY d.id", Deck.class);
       findByIdQuery.setParameter("entityId", id);
       Deck entity;
       try

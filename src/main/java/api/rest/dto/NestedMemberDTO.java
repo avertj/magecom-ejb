@@ -20,7 +20,7 @@ public class NestedMemberDTO implements Serializable
    private String email;
    private String username;
    private String password;
-   private java.util.Date dateRegistration;
+   private Date creationDate;
 
    public NestedMemberDTO()
    {
@@ -41,7 +41,7 @@ public class NestedMemberDTO implements Serializable
          this.email = entity.getEmail();
          this.username = entity.getUsername();
          this.password = entity.getPassword();
-         this.dateRegistration = entity.getDateRegistration();
+         this.creationDate = entity.getCreationDate();
       }
    }
 
@@ -77,7 +77,7 @@ public class NestedMemberDTO implements Serializable
       entity.setEmail(this.email);
       entity.setUsername(this.username);
       entity.setPassword(this.password);
-      entity.setDateRegistration(this.dateRegistration);
+      entity.setCreationDate(this.creationDate);
       entity = em.merge(entity);
       return entity;
    }
@@ -192,13 +192,13 @@ public class NestedMemberDTO implements Serializable
       this.password = password;
    }
 
-   public Date getDateRegistration()
+   public Date getCreationDate()
    {
-      return this.dateRegistration;
+      return this.creationDate;
    }
 
-   public void setDateRegistration(final java.util.Date dateRegistration)
+   public void setCreationDate(final Date creationDate)
    {
-      this.dateRegistration = dateRegistration;
+      this.creationDate = creationDate;
    }
 }

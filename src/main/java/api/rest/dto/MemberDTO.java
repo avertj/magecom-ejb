@@ -13,6 +13,8 @@ import api.rest.dto.NestedComboDTO;
 import persistance.entity.Combo;
 import api.rest.dto.NestedPurchaseDTO;
 import persistance.entity.Purchase;
+import api.rest.dto.NestedCollectionTupleDTO;
+import persistance.entity.tuple.CollectionTuple;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -30,10 +32,11 @@ public class MemberDTO implements Serializable
    private String email;
    private String username;
    private String password;
-   private java.util.Date dateRegistration;
+   private Date creationDate;
    private Set<NestedDeckDTO> decks = new HashSet<NestedDeckDTO>();
    private Set<NestedComboDTO> combos = new HashSet<NestedComboDTO>();
    private Set<NestedPurchaseDTO> purchases = new HashSet<NestedPurchaseDTO>();
+   private Set<NestedCollectionTupleDTO> collection = new HashSet<NestedCollectionTupleDTO>();
 
    public MemberDTO()
    {
@@ -54,7 +57,7 @@ public class MemberDTO implements Serializable
          this.email = entity.getEmail();
          this.username = entity.getUsername();
          this.password = entity.getPassword();
-         this.dateRegistration = entity.getDateRegistration();
+         this.creationDate = entity.getCreationDate();
          Iterator<Deck> iterDecks = entity.getDecks().iterator();
          while (iterDecks.hasNext())
          {
@@ -72,6 +75,13 @@ public class MemberDTO implements Serializable
          {
             Purchase element = iterPurchases.next();
             this.purchases.add(new NestedPurchaseDTO(element));
+         }
+         Iterator<CollectionTuple> iterCollection = entity.getCollection()
+               .iterator();
+         while (iterCollection.hasNext())
+         {
+            CollectionTuple element = iterCollection.next();
+            this.collection.add(new NestedCollectionTupleDTO(element));
          }
       }
    }
@@ -92,7 +102,7 @@ public class MemberDTO implements Serializable
       entity.setEmail(this.email);
       entity.setUsername(this.username);
       entity.setPassword(this.password);
-      entity.setDateRegistration(this.dateRegistration);
+      entity.setCreationDate(this.creationDate);
       Iterator<Deck> iterDecks = entity.getDecks().iterator();
       while (iterDecks.hasNext())
       {
@@ -249,6 +259,64 @@ public class MemberDTO implements Serializable
             }
          }
       }
+      Iterator<CollectionTuple> iterCollection = entity.getCollection()
+            .iterator();
+      while (iterCollection.hasNext())
+      {
+         boolean found = false;
+         CollectionTuple collectionTuple = iterCollection.next();
+         Iterator<NestedCollectionTupleDTO> iterDtoCollection = this
+               .getCollection().iterator();
+         while (iterDtoCollection.hasNext())
+         {
+            NestedCollectionTupleDTO dtoCollectionTuple = iterDtoCollection
+                  .next();
+            if (dtoCollectionTuple.getId().equals(collectionTuple.getId()))
+            {
+               found = true;
+               break;
+            }
+         }
+         if (found == false)
+         {
+            iterCollection.remove();
+         }
+      }
+      Iterator<NestedCollectionTupleDTO> iterDtoCollection = this
+            .getCollection().iterator();
+      while (iterDtoCollection.hasNext())
+      {
+         boolean found = false;
+         NestedCollectionTupleDTO dtoCollectionTuple = iterDtoCollection
+               .next();
+         iterCollection = entity.getCollection().iterator();
+         while (iterCollection.hasNext())
+         {
+            CollectionTuple collectionTuple = iterCollection.next();
+            if (dtoCollectionTuple.getId().equals(collectionTuple.getId()))
+            {
+               found = true;
+               break;
+            }
+         }
+         if (found == false)
+         {
+            Iterator<CollectionTuple> resultIter = em
+                  .createQuery(
+                        "SELECT DISTINCT c FROM CollectionTuple c",
+                        CollectionTuple.class).getResultList()
+                  .iterator();
+            while (resultIter.hasNext())
+            {
+               CollectionTuple result = resultIter.next();
+               if (result.getId().equals(dtoCollectionTuple.getId()))
+               {
+                  entity.getCollection().add(result);
+                  break;
+               }
+            }
+         }
+      }
       entity = em.merge(entity);
       return entity;
    }
@@ -363,14 +431,14 @@ public class MemberDTO implements Serializable
       this.password = password;
    }
 
-   public Date getDateRegistration()
+   public Date getCreationDate()
    {
-      return this.dateRegistration;
+      return this.creationDate;
    }
 
-   public void setDateRegistration(final java.util.Date dateRegistration)
+   public void setCreationDate(final Date creationDate)
    {
-      this.dateRegistration = dateRegistration;
+      this.creationDate = creationDate;
    }
 
    public Set<NestedDeckDTO> getDecks()
@@ -401,5 +469,15 @@ public class MemberDTO implements Serializable
    public void setPurchases(final Set<NestedPurchaseDTO> purchases)
    {
       this.purchases = purchases;
+   }
+
+   public Set<NestedCollectionTupleDTO> getCollection()
+   {
+      return this.collection;
+   }
+
+   public void setCollection(final Set<NestedCollectionTupleDTO> collection)
+   {
+      this.collection = collection;
    }
 }

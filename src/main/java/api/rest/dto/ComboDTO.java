@@ -6,6 +6,11 @@ import javax.persistence.EntityManager;
 import java.util.Date;
 import api.rest.dto.ColorDTO;
 import api.rest.dto.NestedMemberDTO;
+import java.util.Set;
+import java.util.HashSet;
+import api.rest.dto.NestedComboTupleDTO;
+import persistance.entity.tuple.ComboTuple;
+import java.util.Iterator;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -15,9 +20,10 @@ public class ComboDTO implements Serializable
    private Long id;
    private String name;
    private String description;
-   private java.util.Date dateCreation;
+   private Date creationDate;
    private ColorDTO color;
    private NestedMemberDTO member;
+   private Set<NestedComboTupleDTO> cards = new HashSet<NestedComboTupleDTO>();
 
    public ComboDTO()
    {
@@ -30,9 +36,15 @@ public class ComboDTO implements Serializable
          this.id = entity.getId();
          this.name = entity.getName();
          this.description = entity.getDescription();
-         this.dateCreation = entity.getDateCreation();
+         this.creationDate = entity.getCreationDate();
          this.color = new ColorDTO(entity.getColor());
          this.member = new NestedMemberDTO(entity.getMember());
+         Iterator<ComboTuple> iterCards = entity.getCards().iterator();
+         while (iterCards.hasNext())
+         {
+            ComboTuple element = iterCards.next();
+            this.cards.add(new NestedComboTupleDTO(element));
+         }
       }
    }
 
@@ -44,7 +56,7 @@ public class ComboDTO implements Serializable
       }
       entity.setName(this.name);
       entity.setDescription(this.description);
-      entity.setDateCreation(this.dateCreation);
+      entity.setCreationDate(this.creationDate);
       if (this.color != null)
       {
          entity.setColor(this.color.fromDTO(entity.getColor(), em));
@@ -52,6 +64,58 @@ public class ComboDTO implements Serializable
       if (this.member != null)
       {
          entity.setMember(this.member.fromDTO(entity.getMember(), em));
+      }
+      Iterator<ComboTuple> iterCards = entity.getCards().iterator();
+      while (iterCards.hasNext())
+      {
+         boolean found = false;
+         ComboTuple comboTuple = iterCards.next();
+         Iterator<NestedComboTupleDTO> iterDtoCards = this.getCards()
+               .iterator();
+         while (iterDtoCards.hasNext())
+         {
+            NestedComboTupleDTO dtoComboTuple = iterDtoCards.next();
+            if (dtoComboTuple.getId().equals(comboTuple.getId()))
+            {
+               found = true;
+               break;
+            }
+         }
+         if (found == false)
+         {
+            iterCards.remove();
+         }
+      }
+      Iterator<NestedComboTupleDTO> iterDtoCards = this.getCards().iterator();
+      while (iterDtoCards.hasNext())
+      {
+         boolean found = false;
+         NestedComboTupleDTO dtoComboTuple = iterDtoCards.next();
+         iterCards = entity.getCards().iterator();
+         while (iterCards.hasNext())
+         {
+            ComboTuple comboTuple = iterCards.next();
+            if (dtoComboTuple.getId().equals(comboTuple.getId()))
+            {
+               found = true;
+               break;
+            }
+         }
+         if (found == false)
+         {
+            Iterator<ComboTuple> resultIter = em
+                  .createQuery("SELECT DISTINCT c FROM ComboTuple c",
+                        ComboTuple.class).getResultList().iterator();
+            while (resultIter.hasNext())
+            {
+               ComboTuple result = resultIter.next();
+               if (result.getId().equals(dtoComboTuple.getId()))
+               {
+                  entity.getCards().add(result);
+                  break;
+               }
+            }
+         }
       }
       entity = em.merge(entity);
       return entity;
@@ -87,14 +151,14 @@ public class ComboDTO implements Serializable
       this.description = description;
    }
 
-   public Date getDateCreation()
+   public Date getCreationDate()
    {
-      return this.dateCreation;
+      return this.creationDate;
    }
 
-   public void setDateCreation(final java.util.Date dateCreation)
+   public void setCreationDate(final Date creationDate)
    {
-      this.dateCreation = dateCreation;
+      this.creationDate = creationDate;
    }
 
    public ColorDTO getColor()
@@ -115,5 +179,15 @@ public class ComboDTO implements Serializable
    public void setMember(final NestedMemberDTO member)
    {
       this.member = member;
+   }
+
+   public Set<NestedComboTupleDTO> getCards()
+   {
+      return this.cards;
+   }
+
+   public void setCards(final Set<NestedComboTupleDTO> cards)
+   {
+      this.cards = cards;
    }
 }

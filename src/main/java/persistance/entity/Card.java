@@ -26,9 +26,6 @@ public class Card implements Serializable {
 	@Column(updatable = false, nullable = false)
 	private String name;
 
-	@Column(updatable = false, nullable = true)
-	private String picturePath;
-
 	@Column(updatable = false, nullable = false)
 	private String type;
 
@@ -70,6 +67,9 @@ public class Card implements Serializable {
 	@Embedded
 	private Color color;
 
+	@Column(updatable = false, nullable = true)
+	private String manaString;
+
 	/*
 	 * @OneToMany(mappedBy="card") private Set<CardMember> cardMember ;
 	 */
@@ -94,14 +94,6 @@ public class Card implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getPicturePath() {
-		return picturePath;
-	}
-
-	public void setPicturePath(String picturePath) {
-		this.picturePath = picturePath;
 	}
 
 	public String getType() {
@@ -199,4 +191,13 @@ public class Card implements Serializable {
 	public void setColor(Color color) {
 		this.color = color;
 	}
+
+	public String getManaString() {
+		return manaString;
+	}
+
+	public void setManaString(String manaString) {
+		this.manaString = manaString;
+	}
+
 }

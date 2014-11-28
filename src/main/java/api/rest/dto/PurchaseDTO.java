@@ -5,6 +5,11 @@ import persistance.entity.Purchase;
 import javax.persistence.EntityManager;
 import java.util.Date;
 import api.rest.dto.NestedMemberDTO;
+import java.util.Set;
+import java.util.HashSet;
+import api.rest.dto.NestedPurchaseTupleDTO;
+import persistance.entity.tuple.PurchaseTuple;
+import java.util.Iterator;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -20,8 +25,9 @@ public class PurchaseDTO implements Serializable
    private String city;
    private String country;
    private Float total;
-   private java.util.Date datePurchase;
+   private Date creationDate;
    private NestedMemberDTO member;
+   private Set<NestedPurchaseTupleDTO> cards = new HashSet<NestedPurchaseTupleDTO>();
 
    public PurchaseDTO()
    {
@@ -40,8 +46,14 @@ public class PurchaseDTO implements Serializable
          this.city = entity.getCity();
          this.country = entity.getCountry();
          this.total = entity.getTotal();
-         this.datePurchase = entity.getDatePurchase();
+         this.creationDate = entity.getCreationDate();
          this.member = new NestedMemberDTO(entity.getMember());
+         Iterator<PurchaseTuple> iterCards = entity.getCards().iterator();
+         while (iterCards.hasNext())
+         {
+            PurchaseTuple element = iterCards.next();
+            this.cards.add(new NestedPurchaseTupleDTO(element));
+         }
       }
    }
 
@@ -59,10 +71,63 @@ public class PurchaseDTO implements Serializable
       entity.setCity(this.city);
       entity.setCountry(this.country);
       entity.setTotal(this.total);
-      entity.setDatePurchase(this.datePurchase);
+      entity.setCreationDate(this.creationDate);
       if (this.member != null)
       {
          entity.setMember(this.member.fromDTO(entity.getMember(), em));
+      }
+      Iterator<PurchaseTuple> iterCards = entity.getCards().iterator();
+      while (iterCards.hasNext())
+      {
+         boolean found = false;
+         PurchaseTuple purchaseTuple = iterCards.next();
+         Iterator<NestedPurchaseTupleDTO> iterDtoCards = this.getCards()
+               .iterator();
+         while (iterDtoCards.hasNext())
+         {
+            NestedPurchaseTupleDTO dtoPurchaseTuple = iterDtoCards.next();
+            if (dtoPurchaseTuple.getId().equals(purchaseTuple.getId()))
+            {
+               found = true;
+               break;
+            }
+         }
+         if (found == false)
+         {
+            iterCards.remove();
+         }
+      }
+      Iterator<NestedPurchaseTupleDTO> iterDtoCards = this.getCards()
+            .iterator();
+      while (iterDtoCards.hasNext())
+      {
+         boolean found = false;
+         NestedPurchaseTupleDTO dtoPurchaseTuple = iterDtoCards.next();
+         iterCards = entity.getCards().iterator();
+         while (iterCards.hasNext())
+         {
+            PurchaseTuple purchaseTuple = iterCards.next();
+            if (dtoPurchaseTuple.getId().equals(purchaseTuple.getId()))
+            {
+               found = true;
+               break;
+            }
+         }
+         if (found == false)
+         {
+            Iterator<PurchaseTuple> resultIter = em
+                  .createQuery("SELECT DISTINCT p FROM PurchaseTuple p",
+                        PurchaseTuple.class).getResultList().iterator();
+            while (resultIter.hasNext())
+            {
+               PurchaseTuple result = resultIter.next();
+               if (result.getId().equals(dtoPurchaseTuple.getId()))
+               {
+                  entity.getCards().add(result);
+                  break;
+               }
+            }
+         }
       }
       entity = em.merge(entity);
       return entity;
@@ -158,14 +223,14 @@ public class PurchaseDTO implements Serializable
       this.total = total;
    }
 
-   public Date getDatePurchase()
+   public Date getCreationDate()
    {
-      return this.datePurchase;
+      return this.creationDate;
    }
 
-   public void setDatePurchase(final java.util.Date datePurchase)
+   public void setCreationDate(final Date creationDate)
    {
-      this.datePurchase = datePurchase;
+      this.creationDate = creationDate;
    }
 
    public NestedMemberDTO getMember()
@@ -176,5 +241,15 @@ public class PurchaseDTO implements Serializable
    public void setMember(final NestedMemberDTO member)
    {
       this.member = member;
+   }
+
+   public Set<NestedPurchaseTupleDTO> getCards()
+   {
+      return this.cards;
+   }
+
+   public void setCards(final Set<NestedPurchaseTupleDTO> cards)
+   {
+      this.cards = cards;
    }
 }

@@ -13,7 +13,6 @@ public class CardDTO implements Serializable
 
    private Long id;
    private String name;
-   private String picturePath;
    private String type;
    private String edition;
    private String text;
@@ -26,6 +25,7 @@ public class CardDTO implements Serializable
    private Integer convertedManaCost;
    private Float price;
    private ColorDTO color;
+   private String manaString;
 
    public CardDTO()
    {
@@ -37,7 +37,6 @@ public class CardDTO implements Serializable
       {
          this.id = entity.getId();
          this.name = entity.getName();
-         this.picturePath = entity.getPicturePath();
          this.type = entity.getType();
          this.edition = entity.getEdition();
          this.text = entity.getText();
@@ -50,6 +49,7 @@ public class CardDTO implements Serializable
          this.convertedManaCost = entity.getConvertedManaCost();
          this.price = entity.getPrice();
          this.color = new ColorDTO(entity.getColor());
+         this.manaString = entity.getManaString();
       }
    }
 
@@ -59,8 +59,8 @@ public class CardDTO implements Serializable
       {
          entity = new Card();
       }
+      entity.setId(this.id);
       entity.setName(this.name);
-      entity.setPicturePath(this.picturePath);
       entity.setType(this.type);
       entity.setEdition(this.edition);
       entity.setText(this.text);
@@ -76,6 +76,7 @@ public class CardDTO implements Serializable
       {
          entity.setColor(this.color.fromDTO(entity.getColor(), em));
       }
+      entity.setManaString(this.manaString);
       entity = em.merge(entity);
       return entity;
    }
@@ -98,16 +99,6 @@ public class CardDTO implements Serializable
    public void setName(final String name)
    {
       this.name = name;
-   }
-
-   public String getPicturePath()
-   {
-      return this.picturePath;
-   }
-
-   public void setPicturePath(final String picturePath)
-   {
-      this.picturePath = picturePath;
    }
 
    public String getType()
@@ -228,5 +219,15 @@ public class CardDTO implements Serializable
    public void setColor(final ColorDTO color)
    {
       this.color = color;
+   }
+
+   public String getManaString()
+   {
+      return this.manaString;
+   }
+
+   public void setManaString(final String manaString)
+   {
+      this.manaString = manaString;
    }
 }

@@ -61,7 +61,7 @@ public class MemberEndpoint
    @Produces("application/json")
    public Response findById(@PathParam("id") Long id)
    {
-      TypedQuery<Member> findByIdQuery = em.createQuery("SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.decks LEFT JOIN FETCH m.combos LEFT JOIN FETCH m.purchases WHERE m.id = :entityId ORDER BY m.id", Member.class);
+      TypedQuery<Member> findByIdQuery = em.createQuery("SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.decks LEFT JOIN FETCH m.combos LEFT JOIN FETCH m.purchases LEFT JOIN FETCH m.collection WHERE m.id = :entityId ORDER BY m.id", Member.class);
       findByIdQuery.setParameter("entityId", id);
       Member entity;
       try
@@ -84,7 +84,7 @@ public class MemberEndpoint
    @Produces("application/json")
    public List<MemberDTO> listAll(@QueryParam("start") Integer startPosition, @QueryParam("max") Integer maxResult)
    {
-      TypedQuery<Member> findAllQuery = em.createQuery("SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.decks LEFT JOIN FETCH m.combos LEFT JOIN FETCH m.purchases ORDER BY m.id", Member.class);
+      TypedQuery<Member> findAllQuery = em.createQuery("SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.decks LEFT JOIN FETCH m.combos LEFT JOIN FETCH m.purchases LEFT JOIN FETCH m.collection ORDER BY m.id", Member.class);
       if (startPosition != null)
       {
          findAllQuery.setFirstResult(startPosition);
@@ -108,7 +108,7 @@ public class MemberEndpoint
    @Consumes("application/json")
    public Response update(@PathParam("id") Long id, MemberDTO dto)
    {
-      TypedQuery<Member> findByIdQuery = em.createQuery("SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.decks LEFT JOIN FETCH m.combos LEFT JOIN FETCH m.purchases WHERE m.id = :entityId ORDER BY m.id", Member.class);
+      TypedQuery<Member> findByIdQuery = em.createQuery("SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.decks LEFT JOIN FETCH m.combos LEFT JOIN FETCH m.purchases LEFT JOIN FETCH m.collection WHERE m.id = :entityId ORDER BY m.id", Member.class);
       findByIdQuery.setParameter("entityId", id);
       Member entity;
       try

@@ -61,7 +61,7 @@ public class ComboEndpoint
    @Produces("application/json")
    public Response findById(@PathParam("id") Long id)
    {
-      TypedQuery<Combo> findByIdQuery = em.createQuery("SELECT DISTINCT c FROM Combo c LEFT JOIN FETCH c.member WHERE c.id = :entityId ORDER BY c.id", Combo.class);
+      TypedQuery<Combo> findByIdQuery = em.createQuery("SELECT DISTINCT c FROM Combo c LEFT JOIN FETCH c.member LEFT JOIN FETCH c.cards WHERE c.id = :entityId ORDER BY c.id", Combo.class);
       findByIdQuery.setParameter("entityId", id);
       Combo entity;
       try
@@ -84,7 +84,7 @@ public class ComboEndpoint
    @Produces("application/json")
    public List<ComboDTO> listAll(@QueryParam("start") Integer startPosition, @QueryParam("max") Integer maxResult)
    {
-      TypedQuery<Combo> findAllQuery = em.createQuery("SELECT DISTINCT c FROM Combo c LEFT JOIN FETCH c.member ORDER BY c.id", Combo.class);
+      TypedQuery<Combo> findAllQuery = em.createQuery("SELECT DISTINCT c FROM Combo c LEFT JOIN FETCH c.member LEFT JOIN FETCH c.cards ORDER BY c.id", Combo.class);
       if (startPosition != null)
       {
          findAllQuery.setFirstResult(startPosition);
@@ -108,7 +108,7 @@ public class ComboEndpoint
    @Consumes("application/json")
    public Response update(@PathParam("id") Long id, ComboDTO dto)
    {
-      TypedQuery<Combo> findByIdQuery = em.createQuery("SELECT DISTINCT c FROM Combo c LEFT JOIN FETCH c.member WHERE c.id = :entityId ORDER BY c.id", Combo.class);
+      TypedQuery<Combo> findByIdQuery = em.createQuery("SELECT DISTINCT c FROM Combo c LEFT JOIN FETCH c.member LEFT JOIN FETCH c.cards WHERE c.id = :entityId ORDER BY c.id", Combo.class);
       findByIdQuery.setParameter("entityId", id);
       Combo entity;
       try
