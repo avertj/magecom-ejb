@@ -39,7 +39,7 @@ public class Card implements Serializable {
 	private String flavorText;
 
 	public enum Rarity {
-		COMMON, UNCOMMON, RARE, MYTHIC_RARE;
+		COMMON, UNCOMMON, RARE;
 	}
 
 	@Column(updatable = false, nullable = false)
