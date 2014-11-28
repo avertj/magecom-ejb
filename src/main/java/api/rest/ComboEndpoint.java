@@ -28,7 +28,7 @@ import persistance.entity.Combo;
  * 
  */
 @Stateless
-@Path("/combos")
+@Path("/combo")
 public class ComboEndpoint
 {
    @PersistenceContext(unitName = "magecom-ejb-persistence-unit")

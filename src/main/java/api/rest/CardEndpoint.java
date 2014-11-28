@@ -28,7 +28,7 @@ import persistance.entity.Card;
  * 
  */
 @Stateless
-@Path("/cards")
+@Path("/card")
 public class CardEndpoint
 {
    @PersistenceContext(unitName = "magecom-ejb-persistence-unit")

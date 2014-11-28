@@ -28,7 +28,7 @@ import persistance.entity.Member;
  * 
  */
 @Stateless
-@Path("/members")
+@Path("/member")
 public class MemberEndpoint
 {
    @PersistenceContext(unitName = "magecom-ejb-persistence-unit")

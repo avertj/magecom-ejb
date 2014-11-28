@@ -28,7 +28,7 @@ import persistance.entity.Deck;
  * 
  */
 @Stateless
-@Path("/decks")
+@Path("/deck")
 public class DeckEndpoint
 {
    @PersistenceContext(unitName = "magecom-ejb-persistence-unit")

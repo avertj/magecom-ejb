@@ -28,7 +28,7 @@ import persistance.entity.Purchase;
  * 
  */
 @Stateless
-@Path("/purchases")
+@Path("/purchase")
 public class PurchaseEndpoint
 {
    @PersistenceContext(unitName = "magecom-ejb-persistence-unit")
