@@ -21,6 +21,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
+
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import api.rest.dto.CardDTO;
 import persistance.entity.Card;
 
@@ -29,11 +32,12 @@ import persistance.entity.Card;
  */
 @Stateless
 @Path("/card")
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class CardEndpoint
 {
    @PersistenceContext(unitName = "magecom-ejb-persistence-unit")
    private EntityManager em;
-
+   
    @POST
    @Consumes("application/json")
    public Response create(CardDTO dto)

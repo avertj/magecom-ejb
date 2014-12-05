@@ -3,115 +3,73 @@ package api.rest.dto;
 import java.io.Serializable;
 import persistance.entity.Combo;
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.util.Date;
 import api.rest.dto.ColorDTO;
+import api.rest.dto.NestedMemberDTO;
+import java.util.Set;
+import java.util.HashSet;
+import persistance.entity.tuple.ComboTuple;
+import java.util.Iterator;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class NestedComboDTO implements Serializable
-{
+public class NestedComboDTO implements Serializable {
 
-   private Long id;
-   private String name;
-   private String description;
-   private Date creationDate;
-   private ColorDTO color;
+	private Long id;
+	private String name;
+	private String description;
+	private Date creationDate;
+	private ColorDTO color;
 
-   public NestedComboDTO()
-   {
-   }
+	public NestedComboDTO() {
+	}
 
-   public NestedComboDTO(final Combo entity)
-   {
-      if (entity != null)
-      {
-         this.id = entity.getId();
-         this.name = entity.getName();
-         this.description = entity.getDescription();
-         this.creationDate = entity.getCreationDate();
-         this.color = new ColorDTO(entity.getColor());
-      }
-   }
+	public NestedComboDTO(final Combo entity) {
+		if (entity != null) {
+			this.id = entity.getId();
+			this.name = entity.getName();
+			this.description = entity.getDescription();
+			this.creationDate = entity.getCreationDate();
+			this.color = new ColorDTO(entity.getColor());
+		}
+	}
 
-   public Combo fromDTO(Combo entity, EntityManager em)
-   {
-      if (entity == null)
-      {
-         entity = new Combo();
-      }
-      if (this.id != null)
-      {
-         TypedQuery<Combo> findByIdQuery = em.createQuery(
-               "SELECT DISTINCT c FROM Combo c WHERE c.id = :entityId",
-               Combo.class);
-         findByIdQuery.setParameter("entityId", this.id);
-         try
-         {
-            entity = findByIdQuery.getSingleResult();
-         }
-         catch (javax.persistence.NoResultException nre)
-         {
-            entity = null;
-         }
-         return entity;
-      }
-      entity.setName(this.name);
-      entity.setDescription(this.description);
-      entity.setCreationDate(this.creationDate);
-      if (this.color != null)
-      {
-         entity.setColor(this.color.fromDTO(entity.getColor(), em));
-      }
-      entity = em.merge(entity);
-      return entity;
-   }
+	public Long getId() {
+		return this.id;
+	}
 
-   public Long getId()
-   {
-      return this.id;
-   }
+	public void setId(final Long id) {
+		this.id = id;
+	}
 
-   public void setId(final Long id)
-   {
-      this.id = id;
-   }
+	public String getName() {
+		return this.name;
+	}
 
-   public String getName()
-   {
-      return this.name;
-   }
+	public void setName(final String name) {
+		this.name = name;
+	}
 
-   public void setName(final String name)
-   {
-      this.name = name;
-   }
+	public String getDescription() {
+		return this.description;
+	}
 
-   public String getDescription()
-   {
-      return this.description;
-   }
+	public void setDescription(final String description) {
+		this.description = description;
+	}
 
-   public void setDescription(final String description)
-   {
-      this.description = description;
-   }
+	public Date getCreationDate() {
+		return this.creationDate;
+	}
 
-   public Date getCreationDate()
-   {
-      return this.creationDate;
-   }
+	public void setCreationDate(final Date creationDate) {
+		this.creationDate = creationDate;
+	}
 
-   public void setCreationDate(final Date creationDate)
-   {
-      this.creationDate = creationDate;
-   }
+	public ColorDTO getColor() {
+		return this.color;
+	}
 
-   public ColorDTO getColor()
-   {
-      return this.color;
-   }
-
-   public void setColor(final ColorDTO color)
-   {
-      this.color = color;
-   }
+	public void setColor(final ColorDTO color) {
+		this.color = color;
+	}
 }

@@ -21,6 +21,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
+
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import api.rest.dto.MemberDTO;
 import persistance.entity.Member;
 
@@ -29,6 +32,7 @@ import persistance.entity.Member;
  */
 @Stateless
 @Path("/member")
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class MemberEndpoint
 {
    @PersistenceContext(unitName = "magecom-ejb-persistence-unit")

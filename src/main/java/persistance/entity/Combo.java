@@ -38,7 +38,7 @@ public class Combo implements Serializable {
 	@Column(updatable = true, nullable = false)
 	private String name;
 
-	@Column(updatable = true, nullable = true)
+	@Column(columnDefinition="TEXT", updatable = true, nullable = true)
 	private String description;
 
 	@Temporal(TemporalType.DATE)

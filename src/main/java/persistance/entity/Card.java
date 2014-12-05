@@ -32,10 +32,10 @@ public class Card implements Serializable {
 	@Column(updatable = false, nullable = true)
 	private String edition;
 
-	@Column(updatable = false, nullable = false)
+	@Column(columnDefinition="TEXT", updatable = false, nullable = false)
 	private String text;
 
-	@Column(updatable = false, nullable = false)
+	@Column(columnDefinition="TEXT", updatable = false, nullable = false)
 	private String flavorText;
 
 	public enum Rarity {
