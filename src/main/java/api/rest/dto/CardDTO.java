@@ -1,13 +1,20 @@
 package api.rest.dto;
 
 import java.io.Serializable;
+
 import persistance.entity.Card;
+
 import javax.persistence.EntityManager;
+
 import persistance.entity.Card.Rarity;
 import api.rest.dto.ColorDTO;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 @XmlRootElement
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class CardDTO implements Serializable {
 
 	private Long id;

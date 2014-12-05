@@ -25,9 +25,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import api.rest.dto.ComboDTO;
-import api.rest.dto.DeckDTO;
 import persistance.entity.Combo;
-import persistance.entity.Deck;
 
 /**
  * 
