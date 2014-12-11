@@ -28,9 +28,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import persistance.entity.Member;
 import api.rest.dto.MemberDTO;
 
-/**
- * 
- */
 @Stateless
 @Path("/member")
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)

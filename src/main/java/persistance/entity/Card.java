@@ -10,8 +10,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
 import org.apache.solr.analysis.ASCIIFoldingFilterFactory;
-import org.apache.solr.analysis.LowerCaseFilterFactory;
 import org.apache.solr.analysis.EdgeNGramFilterFactory;
+import org.apache.solr.analysis.LowerCaseFilterFactory;
 import org.apache.solr.analysis.PhoneticFilterFactory;
 import org.apache.solr.analysis.SnowballPorterFilterFactory;
 import org.apache.solr.analysis.StandardTokenizerFactory;
@@ -27,11 +27,6 @@ import org.hibernate.search.annotations.Store;
 import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 
-/**
- * Entity implementation class for Entity: Card
- *
- */
-
 @Entity
 @Indexed
 @AnalyzerDefs({
@@ -39,10 +34,7 @@ import org.hibernate.search.annotations.TokenizerDef;
 				@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
 				@TokenFilterDef(factory = LowerCaseFilterFactory.class),
 				@TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @Parameter(name = "encoder", value = "SOUNDEX") }),
-				@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }),
-				/*@TokenFilterDef(factory = EdgeNGramFilterFactory.class, params = {
-						@Parameter(name = "maxGramSize", value = "10"),
-						@Parameter(name = "minGramSize", value = "2") })*/ }),
+				@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }), }),
 		@AnalyzerDef(name = "fr.card.engram", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
 				@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
 				@TokenFilterDef(factory = LowerCaseFilterFactory.class),

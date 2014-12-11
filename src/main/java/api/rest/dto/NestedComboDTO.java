@@ -1,16 +1,13 @@
 package api.rest.dto;
 
 import java.io.Serializable;
-import persistance.entity.Combo;
 import java.util.Date;
-import api.rest.dto.ColorDTO;
+
+import persistance.entity.Combo;
 
 public class NestedComboDTO implements Serializable {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private Long id;
 	private String name;
 	private String description;

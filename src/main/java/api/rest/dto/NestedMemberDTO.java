@@ -1,17 +1,16 @@
 package api.rest.dto;
 
 import java.io.Serializable;
-import persistance.entity.Member;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.util.Date;
 
-public class NestedMemberDTO implements Serializable {
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
-	/**
-	 * 
-	 */
+import persistance.entity.Member;
+
+public class NestedMemberDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
+
 	private Long id;
 	private String lastName;
 	private String firstName;

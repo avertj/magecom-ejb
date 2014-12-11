@@ -5,11 +5,8 @@ import java.io.Serializable;
 import persistance.entity.tuple.SimpleTuple;
 
 public class NestedSimpleTupleDTO implements Serializable {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private Long id;
 	private CardDTO card;
 	private Integer quantity;

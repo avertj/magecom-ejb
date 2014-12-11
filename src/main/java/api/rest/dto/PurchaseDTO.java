@@ -1,23 +1,21 @@
 package api.rest.dto;
 
 import java.io.Serializable;
-import persistance.entity.Purchase;
-import javax.persistence.EntityManager;
 import java.util.Date;
-import api.rest.dto.NestedMemberDTO;
-import java.util.Set;
 import java.util.HashSet;
-import persistance.entity.tuple.PurchaseTuple;
 import java.util.Iterator;
+import java.util.Set;
+
+import javax.persistence.EntityManager;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import persistance.entity.Purchase;
+import persistance.entity.tuple.PurchaseTuple;
 
 @XmlRootElement
 public class PurchaseDTO implements Serializable {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private Long id;
 	private String lastName;
 	private String firstName;

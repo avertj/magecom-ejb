@@ -1,35 +1,24 @@
 package api.rest.dto;
 
 import java.io.Serializable;
-
-import persistance.entity.Combo;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
-
-import java.util.Date;
-
-import api.rest.dto.ColorDTO;
-import api.rest.dto.NestedMemberDTO;
-
-import java.util.Set;
-import java.util.HashSet;
-
-import persistance.entity.tuple.ComboTuple;
-
-import java.util.Iterator;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import persistance.entity.Combo;
+import persistance.entity.tuple.ComboTuple;
+
 @XmlRootElement
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ComboDTO implements Serializable {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private Long id;
 	private String name;
 	private String description;

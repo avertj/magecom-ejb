@@ -19,7 +19,6 @@ import javax.persistence.TemporalType;
 
 import org.apache.solr.analysis.ASCIIFoldingFilterFactory;
 import org.apache.solr.analysis.LowerCaseFilterFactory;
-import org.apache.solr.analysis.NGramFilterFactory;
 import org.apache.solr.analysis.PhoneticFilterFactory;
 import org.apache.solr.analysis.SnowballPorterFilterFactory;
 import org.apache.solr.analysis.StandardTokenizerFactory;
@@ -35,22 +34,14 @@ import org.hibernate.search.annotations.TokenizerDef;
 
 import persistance.entity.tuple.DeckTuple;
 
-/**
- * Entity implementation class for Entity: Deck
- *
- */
-
 @Entity
 @Indexed
 @AnalyzerDefs({ @AnalyzerDef(name = "fr.deck", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
-	@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
-	@TokenFilterDef(factory = LowerCaseFilterFactory.class),
-	@TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @Parameter(name = "encoder", value = "SOUNDEX") }),
-	@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }),
-	//@TokenFilterDef(factory = NGramFilterFactory.class, params = { @Parameter(name = "maxGramSize", value = "10"), @Parameter(name = "minGramSize", value = "2") })
-}) })
+		@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
+		@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+		@TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @Parameter(name = "encoder", value = "SOUNDEX") }),
+		@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }), }) })
 public class Deck implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	@Id

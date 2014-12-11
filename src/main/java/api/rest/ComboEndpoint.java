@@ -28,9 +28,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import persistance.entity.Combo;
 import api.rest.dto.ComboDTO;
 
-/**
- * 
- */
 @Stateless
 @Path("/combo")
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)

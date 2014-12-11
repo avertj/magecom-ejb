@@ -5,9 +5,6 @@ import java.io.Serializable;
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.QueryParam;
 
-import persistance.entity.Card;
-import persistance.entity.Card.Rarity;
-
 public class CardSearchDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -2,9 +2,6 @@ package api.rest.dto.search;
 
 import java.io.Serializable;
 
-import persistance.entity.Color;
-
-import javax.persistence.EntityManager;
 import javax.ws.rs.QueryParam;
 
 public class SearchColorDTO implements Serializable {

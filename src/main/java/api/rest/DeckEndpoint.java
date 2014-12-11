@@ -28,9 +28,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import persistance.entity.Deck;
 import api.rest.dto.DeckDTO;
 
-/**
- * 
- */
 @Stateless
 @Path("/deck")
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)

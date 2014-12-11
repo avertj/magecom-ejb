@@ -26,9 +26,6 @@ import javax.ws.rs.core.UriBuilder;
 import persistance.entity.Purchase;
 import api.rest.dto.PurchaseDTO;
 
-/**
- * 
- */
 @Stateless
 @Path("/purchase")
 public class PurchaseEndpoint {

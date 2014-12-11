@@ -1,37 +1,27 @@
 package api.rest.dto;
 
 import java.io.Serializable;
-
-import persistance.entity.Member;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
-
-import java.util.Date;
-import java.util.Set;
-import java.util.HashSet;
-
-import persistance.entity.Deck;
-
-import java.util.Iterator;
-
-import api.rest.dto.NestedSimpleTupleDTO;
-import persistance.entity.Combo;
-import api.rest.dto.NestedPurchaseDTO;
-import persistance.entity.Purchase;
-import persistance.entity.tuple.CollectionTuple;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import persistance.entity.Combo;
+import persistance.entity.Deck;
+import persistance.entity.Member;
+import persistance.entity.Purchase;
+import persistance.entity.tuple.CollectionTuple;
+
 @XmlRootElement
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class MemberDTO implements Serializable {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private Long id;
 	private String lastName;
 	private String firstName;
@@ -64,7 +54,7 @@ public class MemberDTO implements Serializable {
 			this.country = entity.getCountry();
 			this.email = entity.getEmail();
 			this.username = entity.getUsername();
-			//this.password = entity.getPassword();
+			// this.password = entity.getPassword();
 			this.creationDate = entity.getCreationDate();
 			Iterator<Deck> iterDecks = entity.getDecks().iterator();
 			while (iterDecks.hasNext()) {
@@ -150,8 +140,7 @@ public class MemberDTO implements Serializable {
 		while (iterCombos.hasNext()) {
 			boolean found = false;
 			Combo combo = iterCombos.next();
-			Iterator<ComboDTO> iterDtoCombos = this.getCombos()
-					.iterator();
+			Iterator<ComboDTO> iterDtoCombos = this.getCombos().iterator();
 			while (iterDtoCombos.hasNext()) {
 				ComboDTO dtoCombo = iterDtoCombos.next();
 				if (dtoCombo.getId().equals(combo.getId())) {

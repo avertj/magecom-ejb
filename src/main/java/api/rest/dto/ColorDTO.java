@@ -1,15 +1,14 @@
 package api.rest.dto;
 
 import java.io.Serializable;
-import persistance.entity.Color;
+
 import javax.persistence.EntityManager;
 
-public class ColorDTO implements Serializable {
+import persistance.entity.Color;
 
-	/**
-	 * 
-	 */
+public class ColorDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
+
 	private Boolean red;
 	private Boolean green;
 	private Boolean blue;

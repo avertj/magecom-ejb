@@ -2,17 +2,17 @@ package api.rest.dto;
 
 import java.io.Serializable;
 
-import persistance.entity.Member;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import persistance.entity.Member;
 
 @XmlRootElement
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class SessionMemberDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Long id;
 	private String lastName;
 	private String firstName;

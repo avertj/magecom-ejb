@@ -30,9 +30,6 @@ import persistance.entity.Card;
 import api.rest.dto.CardDTO;
 import api.rest.dto.search.CardSearchDTO;
 
-/**
- * 
- */
 @Stateless
 @Path("/card")
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)

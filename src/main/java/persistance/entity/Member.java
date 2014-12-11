@@ -25,7 +25,6 @@ import persistance.entity.tuple.CollectionTuple;
 @Entity
 @NamedQueries({ @NamedQuery(name = "findByUsername", query = "SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.decks LEFT JOIN FETCH m.combos LEFT JOIN FETCH m.purchases LEFT JOIN FETCH m.collection WHERE m.username = :username"), })
 public class Member implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	@Id

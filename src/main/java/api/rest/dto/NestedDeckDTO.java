@@ -1,18 +1,16 @@
 package api.rest.dto;
 
 import java.io.Serializable;
-import persistance.entity.Deck;
+import java.util.Date;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.Date;
-import api.rest.dto.ColorDTO;
+
+import persistance.entity.Deck;
 
 public class NestedDeckDTO implements Serializable {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private Long id;
 	private String name;
 	private String description;

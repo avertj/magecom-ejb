@@ -18,14 +18,8 @@ import javax.persistence.TemporalType;
 
 import persistance.entity.tuple.PurchaseTuple;
 
-/**
- * Entity implementation class for Entity: Purchase
- *
- */
-
 @Entity
 public class Purchase implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
