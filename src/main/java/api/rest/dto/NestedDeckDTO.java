@@ -9,6 +9,10 @@ import api.rest.dto.ColorDTO;
 
 public class NestedDeckDTO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String name;
 	private String description;

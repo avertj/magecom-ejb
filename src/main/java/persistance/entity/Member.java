@@ -13,6 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
@@ -20,12 +22,8 @@ import javax.persistence.TemporalType;
 
 import persistance.entity.tuple.CollectionTuple;
 
-/**
- * Entity implementation class for Entity: Member
- *
- */
-
 @Entity
+@NamedQueries({ @NamedQuery(name = "findByUsername", query = "SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.decks LEFT JOIN FETCH m.combos LEFT JOIN FETCH m.purchases LEFT JOIN FETCH m.collection WHERE m.username = :username"), })
 public class Member implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -57,10 +55,10 @@ public class Member implements Serializable {
 	@Column(updatable = true, nullable = false)
 	private String country;
 
-	@Column(updatable = true, nullable = false)
+	@Column(updatable = true, nullable = false, unique = true)
 	private String email;
 
-	@Column(updatable = true, nullable = false)
+	@Column(updatable = true, nullable = false, unique = true)
 	private String username;
 
 	@Column(updatable = true, nullable = false)

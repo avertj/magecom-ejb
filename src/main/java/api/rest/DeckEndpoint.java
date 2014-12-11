@@ -18,15 +18,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import api.rest.dto.DeckDTO;
 import persistance.entity.Deck;
-import persistance.entity.tuple.DeckTuple;
+import api.rest.dto.DeckDTO;
 
 /**
  * 
@@ -39,7 +39,7 @@ public class DeckEndpoint {
 	private EntityManager em;
 
 	@POST
-	@Consumes("application/json")
+	@Consumes(MediaType.APPLICATION_JSON)
 	public Response create(DeckDTO dto) {
 		Deck entity = dto.fromDTO(null, em);
 		em.persist(entity);
@@ -61,7 +61,7 @@ public class DeckEndpoint {
 
 	@GET
 	@Path("/{id:[0-9][0-9]*}")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response findById(@PathParam("id") Long id) {
 		TypedQuery<Deck> findByIdQuery = em
 				.createQuery(
@@ -83,11 +83,12 @@ public class DeckEndpoint {
 
 	@GET
 	@Path("/card/{id:[0-9][0-9]*}")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	public List<DeckDTO> findByCard(@PathParam("id") Long id) {
 		final List<DeckDTO> results = new ArrayList<DeckDTO>();
 
-		TypedQuery<Deck> findByCardQuery = em.createQuery(
+		TypedQuery<Deck> findByCardQuery = em
+				.createQuery(
 						"SELECT DISTINCT d FROM Deck d, DeckTuple dt LEFT JOIN FETCH d.member LEFT JOIN FETCH d.cards WHERE dt MEMBER OF d.cards AND dt.card.id = :card ORDER BY d.id",
 						Deck.class);
 		findByCardQuery.setParameter("card", id);
@@ -101,11 +102,12 @@ public class DeckEndpoint {
 
 	@GET
 	@Path("/member/{id:[0-9][0-9]*}")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	public List<DeckDTO> findByMember(@PathParam("id") Long id) {
 		final List<DeckDTO> results = new ArrayList<DeckDTO>();
 
-		TypedQuery<Deck> findByMemberQuery = em.createQuery(
+		TypedQuery<Deck> findByMemberQuery = em
+				.createQuery(
 						"SELECT DISTINCT d FROM Deck d LEFT JOIN FETCH d.member LEFT JOIN FETCH d.cards WHERE d.member.id = :member ORDER BY d.id",
 						Deck.class);
 		findByMemberQuery.setParameter("member", id);
@@ -118,7 +120,7 @@ public class DeckEndpoint {
 	}
 
 	@GET
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	public List<DeckDTO> listAll(@QueryParam("start") Integer startPosition,
 			@QueryParam("max") Integer maxResult) {
 		TypedQuery<Deck> findAllQuery = em
@@ -142,7 +144,7 @@ public class DeckEndpoint {
 
 	@PUT
 	@Path("/{id:[0-9][0-9]*}")
-	@Consumes("application/json")
+	@Consumes(MediaType.APPLICATION_JSON)
 	public Response update(@PathParam("id") Long id, DeckDTO dto) {
 		TypedQuery<Deck> findByIdQuery = em
 				.createQuery(

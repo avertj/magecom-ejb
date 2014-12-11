@@ -32,21 +32,37 @@
 			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-jaxrs</artifactId>
-				<version>3.0.9.Final</version>
+				<version>3.0.10.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-jackson-provider</artifactId>
-				<version>3.0.9.Final</version>
+				<version>3.0.10.Final</version>
 			</dependency>
+			<!-- <dependency> <groupId>org.jboss.resteasy</groupId> <artifactId>jose-jwt</artifactId> 
+				<version>3.0.9.Final</version> </dependency> <dependency> <groupId>org.jboss.resteasy</groupId> 
+				<artifactId>skeleton-key-core</artifactId> <version>3.0.9.Final</version> 
+				</dependency> -->
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>4.3.7.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-search</artifactId>
+				<version>4.5.2.Final</version>
+			</dependency>
+
+			<!-- <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-search-orm</artifactId> 
+				<version>4.4.6.Final</version> </dependency> -->
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
-		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
+		<!-- <dependency> <groupId>org.hibernate.javax.persistence</groupId> <artifactId>hibernate-jpa-2.0-api</artifactId> 
+			<scope>provided</scope> </dependency> -->
+		<!-- <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-core</artifactId> 
+			<scope>provided</scope> <version>4.2.14.SP1-redhat-1</version> </dependency> -->
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
@@ -82,6 +98,21 @@
 			<artifactId>resteasy-jackson-provider</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<!-- <dependency> <groupId>org.jboss.resteasy</groupId> <artifactId>jose-jwt</artifactId> 
+			<scope>provided</scope> </dependency> <dependency> <groupId>org.jboss.resteasy</groupId> 
+			<artifactId>skeleton-key-core</artifactId> <scope>provided</scope> </dependency> -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-search</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-search-orm</artifactId> 
+			<scope>provided</scope> </dependency> -->
 	</dependencies>
 	<build>
 		<plugins>

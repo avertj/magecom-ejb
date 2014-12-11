@@ -8,6 +8,10 @@ import java.util.Date;
 
 public class NestedMemberDTO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String lastName;
 	private String firstName;

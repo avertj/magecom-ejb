@@ -9,12 +9,46 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
+import org.apache.solr.analysis.ASCIIFoldingFilterFactory;
+import org.apache.solr.analysis.LowerCaseFilterFactory;
+import org.apache.solr.analysis.EdgeNGramFilterFactory;
+import org.apache.solr.analysis.PhoneticFilterFactory;
+import org.apache.solr.analysis.SnowballPorterFilterFactory;
+import org.apache.solr.analysis.StandardTokenizerFactory;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.AnalyzerDefs;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Fields;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Parameter;
+import org.hibernate.search.annotations.Store;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
+
 /**
  * Entity implementation class for Entity: Card
  *
  */
 
 @Entity
+@Indexed
+@AnalyzerDefs({
+		@AnalyzerDef(name = "fr.card", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+				@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
+				@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+				@TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @Parameter(name = "encoder", value = "SOUNDEX") }),
+				@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }),
+				/*@TokenFilterDef(factory = EdgeNGramFilterFactory.class, params = {
+						@Parameter(name = "maxGramSize", value = "10"),
+						@Parameter(name = "minGramSize", value = "2") })*/ }),
+		@AnalyzerDef(name = "fr.card.engram", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+				@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
+				@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+				@TokenFilterDef(factory = EdgeNGramFilterFactory.class, params = {
+						@Parameter(name = "maxGramSize", value = "10"),
+						@Parameter(name = "minGramSize", value = "3") }) }) })
 public class Card implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -24,18 +58,25 @@ public class Card implements Serializable {
 	private Long id;
 
 	@Column(updatable = false, nullable = false)
+	@Fields({
+			@Field(store = Store.YES, analyzer = @Analyzer(definition = "fr.card")),
+			@Field(name = "engram", analyzer = @Analyzer(definition = "fr.card.engram")) })
 	private String name;
 
 	@Column(updatable = false, nullable = false)
+	@Field
+	@Analyzer(definition = "fr.card")
 	private String type;
 
 	@Column(updatable = false, nullable = true)
 	private String edition;
 
-	@Column(columnDefinition="TEXT", updatable = false, nullable = false)
+	@Column(columnDefinition = "TEXT", updatable = false, nullable = false)
+	@Field
+	@Analyzer(definition = "fr.card")
 	private String text;
 
-	@Column(columnDefinition="TEXT", updatable = false, nullable = false)
+	@Column(columnDefinition = "TEXT", updatable = false, nullable = false)
 	private String flavorText;
 
 	public enum Rarity {
@@ -59,12 +100,14 @@ public class Card implements Serializable {
 	private Boolean x;
 
 	@Column(updatable = false, nullable = false)
+	@Field
 	private Integer convertedManaCost;
 
 	@Column(updatable = true, nullable = false)
 	private Float price;
 
 	@Embedded
+	@IndexedEmbedded
 	private Color color;
 
 	@Column(updatable = false, nullable = true)

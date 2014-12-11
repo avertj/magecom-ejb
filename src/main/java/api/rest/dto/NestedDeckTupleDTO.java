@@ -7,6 +7,10 @@ import javax.persistence.TypedQuery;
 
 public class NestedDeckTupleDTO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long id;
 	private int quantity;
 	private boolean favorite;

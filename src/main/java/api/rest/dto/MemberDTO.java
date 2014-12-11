@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
 
-import api.rest.dto.NestedDeckDTO;
 import persistance.entity.Deck;
 
 import java.util.Iterator;
@@ -29,6 +28,10 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class MemberDTO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String lastName;
 	private String firstName;
@@ -61,7 +64,7 @@ public class MemberDTO implements Serializable {
 			this.country = entity.getCountry();
 			this.email = entity.getEmail();
 			this.username = entity.getUsername();
-			this.password = entity.getPassword();
+			//this.password = entity.getPassword();
 			this.creationDate = entity.getCreationDate();
 			Iterator<Deck> iterDecks = entity.getDecks().iterator();
 			while (iterDecks.hasNext()) {
@@ -357,14 +360,6 @@ public class MemberDTO implements Serializable {
 
 	public void setUsername(final String username) {
 		this.username = username;
-	}
-
-	public String getPassword() {
-		return this.password;
-	}
-
-	public void setPassword(final String password) {
-		this.password = password;
 	}
 
 	public Date getCreationDate() {

@@ -2,20 +2,14 @@ package api.rest.dto;
 
 import java.io.Serializable;
 
-import persistance.entity.Card;
-import persistance.entity.Combo;
 import persistance.entity.tuple.SimpleTuple;
-
-import javax.persistence.EntityManager;
-import javax.persistence.ManyToOne;
-import javax.persistence.TypedQuery;
-
-import java.util.Date;
-
-import api.rest.dto.ColorDTO;
 
 public class NestedSimpleTupleDTO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long id;
 	private CardDTO card;
 	private Integer quantity;

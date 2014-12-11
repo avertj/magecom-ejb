@@ -1,44 +1,27 @@
-package api.rest.dto;
+package api.rest.dto.search;
 
 import java.io.Serializable;
+
 import persistance.entity.Color;
+
 import javax.persistence.EntityManager;
+import javax.ws.rs.QueryParam;
 
-public class ColorDTO implements Serializable {
-
-	/**
-	 * 
-	 */
+public class SearchColorDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	@QueryParam("red")
 	private Boolean red;
+	@QueryParam("green")
 	private Boolean green;
+	@QueryParam("blue")
 	private Boolean blue;
+	@QueryParam("black")
 	private Boolean black;
+	@QueryParam("white")
 	private Boolean white;
 
-	public ColorDTO() {
-	}
-
-	public ColorDTO(final Color entity) {
-		if (entity != null) {
-			this.red = entity.getRed();
-			this.green = entity.getGreen();
-			this.blue = entity.getBlue();
-			this.black = entity.getBlack();
-			this.white = entity.getWhite();
-		}
-	}
-
-	public Color fromDTO(Color entity, EntityManager em) {
-		if (entity == null) {
-			entity = new Color();
-		}
-		entity.setRed(this.red);
-		entity.setGreen(this.green);
-		entity.setBlue(this.blue);
-		entity.setBlack(this.black);
-		entity.setWhite(this.white);
-		return entity;
+	public SearchColorDTO() {
 	}
 
 	public Boolean getRed() {

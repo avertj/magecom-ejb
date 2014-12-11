@@ -3,22 +3,29 @@ package persistance.entity;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import org.hibernate.search.annotations.Field;
+
 @Embeddable
 public class Color {
 
 	@Column(updatable = true, nullable = false)
+	@Field
 	private Boolean red;
 
 	@Column(updatable = true, nullable = false)
+	@Field
 	private Boolean green;
 
 	@Column(updatable = true, nullable = false)
+	@Field
 	private Boolean blue;
 
 	@Column(updatable = true, nullable = false)
+	@Field
 	private Boolean black;
 
 	@Column(updatable = true, nullable = false)
+	@Field
 	private Boolean white;
 
 	public Boolean getRed() {
