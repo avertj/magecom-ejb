@@ -30,7 +30,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
-import persistance.entity.Card;
 import persistance.entity.Deck;
 import api.rest.dto.DeckDTO;
 import api.rest.dto.search.DeckSearchDTO;
@@ -181,7 +180,7 @@ public class DeckEndpoint {
 		BooleanQuery root = new BooleanQuery();
 
 		QueryBuilder qb = fullTextEntityManager.getSearchFactory()
-				.buildQueryBuilder().forEntity(Card.class).get();
+				.buildQueryBuilder().forEntity(Deck.class).get();
 
 		if (search.getName() != null) {
 			org.apache.lucene.search.Query nameCriteria = qb.keyword()
@@ -233,12 +232,12 @@ public class DeckEndpoint {
 			}
 		}
 		javax.persistence.Query jpaQuery = fullTextEntityManager
-				.createFullTextQuery(root, Card.class);
+				.createFullTextQuery(root, Deck.class);
 
 		final List<Deck> searchResults = jpaQuery.getResultList();
 		final List<DeckDTO> results = new ArrayList<DeckDTO>();
 		for (Deck searchResult : searchResults) {
-			DeckDTO dto = new DeckDTO(searchResult, false, false);
+			DeckDTO dto = new DeckDTO(searchResult, false, true);
 			results.add(dto);
 		}
 		// em.getTransaction().commit();
