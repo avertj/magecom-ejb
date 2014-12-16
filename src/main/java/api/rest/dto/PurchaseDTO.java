@@ -26,8 +26,8 @@ public class PurchaseDTO implements Serializable {
 	private String country;
 	private Float total;
 	private Date creationDate;
-	private NestedMemberDTO member;
-	private Set<NestedSimpleTupleDTO> cards = new HashSet<NestedSimpleTupleDTO>();
+	private MemberDTO member;
+	private Set<SimpleTupleDTO> cards = new HashSet<SimpleTupleDTO>();
 
 	public PurchaseDTO() {
 	}
@@ -44,11 +44,11 @@ public class PurchaseDTO implements Serializable {
 			this.country = entity.getCountry();
 			this.total = entity.getTotal();
 			this.creationDate = entity.getCreationDate();
-			this.member = new NestedMemberDTO(entity.getMember());
+			this.member = new PublicMemberDTO(entity.getMember(), false);
 			Iterator<PurchaseTuple> iterCards = entity.getCards().iterator();
 			while (iterCards.hasNext()) {
 				PurchaseTuple element = iterCards.next();
-				this.cards.add(new NestedSimpleTupleDTO(element));
+				this.cards.add(new SimpleTupleDTO(element));
 			}
 		}
 	}
@@ -56,6 +56,8 @@ public class PurchaseDTO implements Serializable {
 	public Purchase fromDTO(Purchase entity, EntityManager em) {
 		if (entity == null) {
 			entity = new Purchase();
+			entity.setCreationDate(new Date());
+			entity.setMember(this.member.fromDTO(null, em));
 		}
 		entity.setLastName(this.lastName);
 		entity.setFirstName(this.firstName);
@@ -65,54 +67,13 @@ public class PurchaseDTO implements Serializable {
 		entity.setCity(this.city);
 		entity.setCountry(this.country);
 		entity.setTotal(this.total);
-		entity.setCreationDate(this.creationDate);
-		if (this.member != null) {
-			entity.setMember(this.member.fromDTO(entity.getMember(), em));
-		}
-		Iterator<PurchaseTuple> iterCards = entity.getCards().iterator();
-		while (iterCards.hasNext()) {
-			boolean found = false;
-			PurchaseTuple purchaseTuple = iterCards.next();
-			Iterator<NestedSimpleTupleDTO> iterDtoCards = this.getCards()
-					.iterator();
-			while (iterDtoCards.hasNext()) {
-				NestedSimpleTupleDTO dtoPurchaseTuple = iterDtoCards.next();
-				if (dtoPurchaseTuple.getId().equals(purchaseTuple.getId())) {
-					found = true;
-					break;
-				}
-			}
-			if (found == false) {
-				iterCards.remove();
-			}
-		}
-		Iterator<NestedSimpleTupleDTO> iterDtoCards = this.getCards()
-				.iterator();
+		Set<PurchaseTuple> cards = new HashSet<PurchaseTuple>();
+		Iterator<SimpleTupleDTO> iterDtoCards = this.getCards().iterator();
 		while (iterDtoCards.hasNext()) {
-			boolean found = false;
-			NestedSimpleTupleDTO dtoPurchaseTuple = iterDtoCards.next();
-			iterCards = entity.getCards().iterator();
-			while (iterCards.hasNext()) {
-				PurchaseTuple purchaseTuple = iterCards.next();
-				if (dtoPurchaseTuple.getId().equals(purchaseTuple.getId())) {
-					found = true;
-					break;
-				}
-			}
-			if (found == false) {
-				Iterator<PurchaseTuple> resultIter = em
-						.createQuery("SELECT DISTINCT p FROM PurchaseTuple p",
-								PurchaseTuple.class).getResultList().iterator();
-				while (resultIter.hasNext()) {
-					PurchaseTuple result = resultIter.next();
-					if (result.getId().equals(dtoPurchaseTuple.getId())) {
-						entity.getCards().add(result);
-						break;
-					}
-				}
-			}
+			cards.add((PurchaseTuple) iterDtoCards.next().fromDTO(
+					new PurchaseTuple(), em));
 		}
-		entity = em.merge(entity);
+		entity.setCards(cards);
 		return entity;
 	}
 
@@ -196,19 +157,19 @@ public class PurchaseDTO implements Serializable {
 		this.creationDate = creationDate;
 	}
 
-	public NestedMemberDTO getMember() {
+	public MemberDTO getMember() {
 		return this.member;
 	}
 
-	public void setMember(final NestedMemberDTO member) {
+	public void setMember(final MemberDTO member) {
 		this.member = member;
 	}
 
-	public Set<NestedSimpleTupleDTO> getCards() {
+	public Set<SimpleTupleDTO> getCards() {
 		return this.cards;
 	}
 
-	public void setCards(final Set<NestedSimpleTupleDTO> cards) {
+	public void setCards(final Set<SimpleTupleDTO> cards) {
 		this.cards = cards;
 	}
 }

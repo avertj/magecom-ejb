@@ -24,8 +24,8 @@ public class DeckDTO implements Serializable {
 	private String description;
 	private Date creationDate;
 	private ColorDTO color;
-	private NestedMemberDTO member;
-	private Set<NestedDeckTupleDTO> cards = new HashSet<NestedDeckTupleDTO>();
+	private MemberDTO member;
+	private Set<DeckTupleDTO> cards = new HashSet<DeckTupleDTO>();
 
 	public DeckDTO() {
 	}
@@ -38,13 +38,13 @@ public class DeckDTO implements Serializable {
 			this.creationDate = entity.getCreationDate();
 			this.color = new ColorDTO(entity.getColor());
 			if (loadMember) {
-				this.member = new NestedMemberDTO(entity.getMember());
+				this.member = new PublicMemberDTO(entity.getMember(), false);
 			}
 			Iterator<DeckTuple> iterCards = entity.getCards().iterator();
 			while (iterCards.hasNext()) {
 				DeckTuple element = iterCards.next();
 				if (element.isFavorite() || !onlyFav) {
-					this.cards.add(new NestedDeckTupleDTO(element));
+					this.cards.add(new DeckTupleDTO(element));
 				}
 			}
 		}
@@ -53,59 +53,25 @@ public class DeckDTO implements Serializable {
 	public Deck fromDTO(Deck entity, EntityManager em) {
 		if (entity == null) {
 			entity = new Deck();
+			entity.setCreationDate(new Date());
+			entity.setMember(this.member.fromDTO(null, em));
 		}
-		entity.setName(this.name);
-		entity.setDescription(this.description);
-		entity.setCreationDate(this.creationDate);
+		if (this.name != null)
+			entity.setName(this.name);
+		if (this.description != null)
+			entity.setDescription(this.description);
 		if (this.color != null) {
+			System.out.println("COLOR NOT NULL");
 			entity.setColor(this.color.fromDTO(entity.getColor(), em));
 		}
-		if (this.member != null) {
-			entity.setMember(this.member.fromDTO(entity.getMember(), em));
-		}
-		Iterator<DeckTuple> iterCards = entity.getCards().iterator();
-		while (iterCards.hasNext()) {
-			boolean found = false;
-			DeckTuple deckTuple = iterCards.next();
-			Iterator<NestedDeckTupleDTO> iterDtoCards = this.getCards()
-					.iterator();
+		if (this.cards != null && this.cards.size() > 0) {
+			Set<DeckTuple> cards = new HashSet<DeckTuple>();
+			Iterator<DeckTupleDTO> iterDtoCards = this.getCards().iterator();
 			while (iterDtoCards.hasNext()) {
-				NestedDeckTupleDTO dtoDeckTuple = iterDtoCards.next();
-				if (dtoDeckTuple.getId().equals(deckTuple.getId())) {
-					found = true;
-					break;
-				}
+				cards.add(iterDtoCards.next().fromDTO(new DeckTuple(), em));
 			}
-			if (found == false) {
-				iterCards.remove();
-			}
+			entity.forceSetCards(cards);
 		}
-		Iterator<NestedDeckTupleDTO> iterDtoCards = this.getCards().iterator();
-		while (iterDtoCards.hasNext()) {
-			boolean found = false;
-			NestedDeckTupleDTO dtoDeckTuple = iterDtoCards.next();
-			iterCards = entity.getCards().iterator();
-			while (iterCards.hasNext()) {
-				DeckTuple deckTuple = iterCards.next();
-				if (dtoDeckTuple.getId().equals(deckTuple.getId())) {
-					found = true;
-					break;
-				}
-			}
-			if (found == false) {
-				Iterator<DeckTuple> resultIter = em
-						.createQuery("SELECT DISTINCT d FROM DeckTuple d",
-								DeckTuple.class).getResultList().iterator();
-				while (resultIter.hasNext()) {
-					DeckTuple result = resultIter.next();
-					if (result.getId().equals(dtoDeckTuple.getId())) {
-						entity.getCards().add(result);
-						break;
-					}
-				}
-			}
-		}
-		entity = em.merge(entity);
 		return entity;
 	}
 
@@ -149,19 +115,19 @@ public class DeckDTO implements Serializable {
 		this.color = color;
 	}
 
-	public NestedMemberDTO getMember() {
+	public MemberDTO getMember() {
 		return this.member;
 	}
 
-	public void setMember(final NestedMemberDTO member) {
+	public void setMember(final MemberDTO member) {
 		this.member = member;
 	}
 
-	public Set<NestedDeckTupleDTO> getCards() {
+	public Set<DeckTupleDTO> getCards() {
 		return this.cards;
 	}
 
-	public void setCards(final Set<NestedDeckTupleDTO> cards) {
+	public void setCards(final Set<DeckTupleDTO> cards) {
 		this.cards = cards;
 	}
 }

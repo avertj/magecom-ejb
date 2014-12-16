@@ -2,11 +2,14 @@ package persistance.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -72,9 +75,9 @@ public class Combo implements Serializable {
 	@JoinColumn(updatable = false, nullable = false)
 	private Member member;
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "combo_id", nullable = false)
-	private Set<ComboTuple> cards;
+	private Set<ComboTuple> cards = new HashSet<ComboTuple>();
 
 	// ManyToMany cards (+ cardsQuantity);
 
@@ -131,7 +134,15 @@ public class Combo implements Serializable {
 	}
 
 	public void setCards(Set<ComboTuple> cards) {
+		// this.cards.clear();
+		// this.cards.addAll(cards);
 		this.cards = cards;
+	}
+
+	public void forceSetCards(Set<ComboTuple> cards) {
+		this.cards.clear();
+		this.cards.addAll(cards);
+		// this.cards = cards;
 	}
 
 }

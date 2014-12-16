@@ -24,8 +24,8 @@ public class ComboDTO implements Serializable {
 	private String description;
 	private Date creationDate;
 	private ColorDTO color;
-	private NestedMemberDTO member;
-	private Set<NestedSimpleTupleDTO> cards = new HashSet<NestedSimpleTupleDTO>();
+	private MemberDTO member;
+	private Set<SimpleTupleDTO> cards = new HashSet<SimpleTupleDTO>();
 
 	public ComboDTO() {
 	}
@@ -38,12 +38,12 @@ public class ComboDTO implements Serializable {
 			this.creationDate = entity.getCreationDate();
 			this.color = new ColorDTO(entity.getColor());
 			if (loadMember) {
-				this.member = new NestedMemberDTO(entity.getMember());
+				this.member = new PublicMemberDTO(entity.getMember(), false);
 			}
 			Iterator<ComboTuple> iterCards = entity.getCards().iterator();
 			while (iterCards.hasNext()) {
 				ComboTuple element = iterCards.next();
-				this.cards.add(new NestedSimpleTupleDTO(element));
+				this.cards.add(new SimpleTupleDTO(element));
 			}
 		}
 	}
@@ -51,60 +51,24 @@ public class ComboDTO implements Serializable {
 	public Combo fromDTO(Combo entity, EntityManager em) {
 		if (entity == null) {
 			entity = new Combo();
+			entity.setCreationDate(new Date());
+			entity.setMember(this.member.fromDTO(null, em));
 		}
-		entity.setName(this.name);
-		entity.setDescription(this.description);
-		entity.setCreationDate(this.creationDate);
-		if (this.color != null) {
+		if (this.name != null)
+			entity.setName(this.name);
+		if (this.description != null)
+			entity.setDescription(this.description);
+		if (this.color != null)
 			entity.setColor(this.color.fromDTO(entity.getColor(), em));
-		}
-		if (this.member != null) {
-			entity.setMember(this.member.fromDTO(entity.getMember(), em));
-		}
-		Iterator<ComboTuple> iterCards = entity.getCards().iterator();
-		while (iterCards.hasNext()) {
-			boolean found = false;
-			ComboTuple comboTuple = iterCards.next();
-			Iterator<NestedSimpleTupleDTO> iterDtoCards = this.getCards()
-					.iterator();
+		if (this.cards != null && this.cards.size() > 0) {
+			Set<ComboTuple> cards = new HashSet<ComboTuple>();
+			Iterator<SimpleTupleDTO> iterDtoCards = this.getCards().iterator();
 			while (iterDtoCards.hasNext()) {
-				NestedSimpleTupleDTO dtoComboTuple = iterDtoCards.next();
-				if (dtoComboTuple.getId().equals(comboTuple.getId())) {
-					found = true;
-					break;
-				}
+				cards.add((ComboTuple) iterDtoCards.next().fromDTO(
+						new ComboTuple(), em));
 			}
-			if (found == false) {
-				iterCards.remove();
-			}
+			entity.forceSetCards(cards);
 		}
-		Iterator<NestedSimpleTupleDTO> iterDtoCards = this.getCards()
-				.iterator();
-		while (iterDtoCards.hasNext()) {
-			boolean found = false;
-			NestedSimpleTupleDTO dtoComboTuple = iterDtoCards.next();
-			iterCards = entity.getCards().iterator();
-			while (iterCards.hasNext()) {
-				ComboTuple comboTuple = iterCards.next();
-				if (dtoComboTuple.getId().equals(comboTuple.getId())) {
-					found = true;
-					break;
-				}
-			}
-			if (found == false) {
-				Iterator<ComboTuple> resultIter = em
-						.createQuery("SELECT DISTINCT c FROM ComboTuple c",
-								ComboTuple.class).getResultList().iterator();
-				while (resultIter.hasNext()) {
-					ComboTuple result = resultIter.next();
-					if (result.getId().equals(dtoComboTuple.getId())) {
-						entity.getCards().add(result);
-						break;
-					}
-				}
-			}
-		}
-		entity = em.merge(entity);
 		return entity;
 	}
 
@@ -148,19 +112,19 @@ public class ComboDTO implements Serializable {
 		this.color = color;
 	}
 
-	public NestedMemberDTO getMember() {
+	public MemberDTO getMember() {
 		return this.member;
 	}
 
-	public void setMember(final NestedMemberDTO member) {
+	public void setMember(final MemberDTO member) {
 		this.member = member;
 	}
 
-	public Set<NestedSimpleTupleDTO> getCards() {
+	public Set<SimpleTupleDTO> getCards() {
 		return this.cards;
 	}
 
-	public void setCards(final Set<NestedSimpleTupleDTO> cards) {
+	public void setCards(final Set<SimpleTupleDTO> cards) {
 		this.cards = cards;
 	}
 }

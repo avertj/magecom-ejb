@@ -2,6 +2,7 @@ package api.rest;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.security.auth.login.LoginException;
@@ -33,14 +34,17 @@ public class AuthEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(SessionMemberDTO member) {
-
+		if (member.getUsername() == null || member.getPassword() == null)
+			return Response.status(401).build();
 		TypedQuery<Member> findByUsername = em.createNamedQuery(
 				"findByUsername", Member.class);
 		findByUsername.setParameter("username", member.getUsername());
-		Member m = findByUsername.getSingleResult();
 		try {
+			Member m = findByUsername.getSingleResult();
 			String token = AuthUtils.login(m, member.getPassword());
 			return Response.ok(new SessionMemberDTO(m, token)).build();
+		} catch (NoResultException ex) {
+			return Response.status(401).build();
 		} catch (LoginException e) {
 			return Response.status(401).build(); // erreur de login (code 401 -
 													// Unauthorized)
@@ -53,14 +57,10 @@ public class AuthEndpoint {
 	public Response validate(SessionMemberDTO member) {
 		Member m = new Member();
 		m.setUsername(member.getUsername());
-		try {
-			if (AuthUtils.validate(m, member.getToken())) {
-				return Response.ok().build();
-			} else {
-				return Response.status(401).build();
-			}
-		} catch (LoginException e) {
-			return Response.status(403).build();
+		if (AuthUtils.validate(m, member.getToken())) {
+			return Response.ok().build();
+		} else {
+			return Response.status(401).build();
 		}
 	}
 

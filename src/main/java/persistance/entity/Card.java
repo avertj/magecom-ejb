@@ -68,7 +68,7 @@ public class Card implements Serializable {
 	@Analyzer(definition = "fr.card")
 	private String text;
 
-	@Column(columnDefinition = "TEXT", updatable = false, nullable = false)
+	@Column(columnDefinition = "TEXT", updatable = false, nullable = true)
 	private String flavorText;
 
 	public enum Rarity {

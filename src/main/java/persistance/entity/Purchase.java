@@ -2,8 +2,10 @@ package persistance.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -60,9 +62,9 @@ public class Purchase implements Serializable {
 	@JoinColumn(updatable = false, nullable = false)
 	private Member member;
 
-	@OneToMany
+	@OneToMany(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "purchase_id", nullable = false)
-	private Set<PurchaseTuple> cards;
+	private Set<PurchaseTuple> cards = new HashSet<PurchaseTuple>();
 
 	// ManyToMany cards (+ cardsQuantity);
 

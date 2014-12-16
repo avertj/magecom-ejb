@@ -24,15 +24,13 @@ public class AuthUtils {
 				String hex = (new HexBinaryAdapter()).marshal(md.digest());
 				return hex;
 			}
-			throw new LoginException("Wrong login / password");
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-		throw new LoginException("Error while generating token");
+		throw new LoginException("Wrong login / password");
 	}
 
-	public static boolean validate(Member member, String token)
-			throws LoginException {
+	public static boolean validate(Member member, String token) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA");
 			md.update(salt.getBytes());
@@ -42,6 +40,6 @@ public class AuthUtils {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-		throw new LoginException("Error while validating token");
+		return false;
 	}
 }

@@ -2,7 +2,8 @@ package persistance.entity.tuple;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "combotuple")

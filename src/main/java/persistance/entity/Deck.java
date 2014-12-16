@@ -2,11 +2,14 @@ package persistance.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,6 +21,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.solr.analysis.ASCIIFoldingFilterFactory;
+import org.apache.solr.analysis.EdgeNGramFilterFactory;
 import org.apache.solr.analysis.LowerCaseFilterFactory;
 import org.apache.solr.analysis.PhoneticFilterFactory;
 import org.apache.solr.analysis.SnowballPorterFilterFactory;
@@ -26,9 +30,11 @@ import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
 import org.hibernate.search.annotations.AnalyzerDefs;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Parameter;
+import org.hibernate.search.annotations.Store;
 import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 
@@ -36,11 +42,18 @@ import persistance.entity.tuple.DeckTuple;
 
 @Entity
 @Indexed
-@AnalyzerDefs({ @AnalyzerDef(name = "fr.deck", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
-		@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
-		@TokenFilterDef(factory = LowerCaseFilterFactory.class),
-		@TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @Parameter(name = "encoder", value = "SOUNDEX") }),
-		@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }), }) })
+@AnalyzerDefs({
+	@AnalyzerDef(name = "fr.deck", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+			@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
+			@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+			@TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @Parameter(name = "encoder", value = "SOUNDEX") }),
+			@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }), }),
+	@AnalyzerDef(name = "fr.deck.engram", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+			@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
+			@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+			@TokenFilterDef(factory = EdgeNGramFilterFactory.class, params = {
+					@Parameter(name = "maxGramSize", value = "10"),
+					@Parameter(name = "minGramSize", value = "3") }) }) })
 public class Deck implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -51,8 +64,9 @@ public class Deck implements Serializable {
 	private Long id;
 
 	@Column(updatable = true, nullable = false)
-	@Field
-	@Analyzer(definition = "fr.deck")
+	@Fields({
+		@Field(store = Store.YES, analyzer = @Analyzer(definition = "fr.deck")),
+		@Field(name = "engram", analyzer = @Analyzer(definition = "fr.deck.engram")) })
 	private String name;
 
 	@Column(columnDefinition = "TEXT", updatable = true, nullable = true)
@@ -72,9 +86,9 @@ public class Deck implements Serializable {
 	@JoinColumn(updatable = false, nullable = false)
 	private Member member;
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "deck_id", nullable = false)
-	private Set<DeckTuple> cards;
+	private Set<DeckTuple> cards = new HashSet<DeckTuple>();
 
 	// ManyToMany cards (+ cardsQuantity + favorite);
 
@@ -131,7 +145,14 @@ public class Deck implements Serializable {
 	}
 
 	public void setCards(Set<DeckTuple> cards) {
+		// this.cards.clear();
+		// this.cards.addAll(cards);
 		this.cards = cards;
 	}
 
+	public void forceSetCards(Set<DeckTuple> cards) {
+		this.cards.clear();
+		this.cards.addAll(cards);
+		// this.cards = cards;
+	}
 }

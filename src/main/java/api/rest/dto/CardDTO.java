@@ -41,7 +41,10 @@ public class CardDTO implements Serializable {
 			this.type = entity.getType();
 			this.edition = entity.getEdition();
 			this.text = entity.getText().split("\\|");
-			this.flavorText = entity.getFlavorText().split("\\|");
+			if (entity.getFlavorText() != null)
+				this.flavorText = entity.getFlavorText().split("\\|");
+			else
+				this.flavorText = new String[0];
 			this.rarity = entity.getRarity();
 			this.artist = entity.getArtist();
 			this.power = entity.getPower();
@@ -59,23 +62,19 @@ public class CardDTO implements Serializable {
 			entity = new Card();
 		}
 		entity.setId(this.id);
-		entity.setName(this.name);
-		entity.setType(this.type);
-		entity.setEdition(this.edition);
-		entity.setText(join(this.text, "|"));
-		entity.setFlavorText(join(this.flavorText, "|"));
-		entity.setRarity(this.rarity);
-		entity.setArtist(this.artist);
-		entity.setPower(this.power);
-		entity.setToughness(this.toughness);
-		entity.setX(this.x);
-		entity.setConvertedManaCost(this.convertedManaCost);
-		entity.setPrice(this.price);
-		if (this.color != null) {
-			entity.setColor(this.color.fromDTO(entity.getColor(), em));
-		}
-		entity.setManaString(this.manaString);
-		entity = em.merge(entity);
+		/*
+		 * entity.setName(this.name); entity.setType(this.type);
+		 * entity.setEdition(this.edition); entity.setText(join(this.text,
+		 * "|")); entity.setFlavorText(join(this.flavorText, "|"));
+		 * entity.setRarity(this.rarity); entity.setArtist(this.artist);
+		 * entity.setPower(this.power); entity.setToughness(this.toughness);
+		 * entity.setX(this.x);
+		 * entity.setConvertedManaCost(this.convertedManaCost);
+		 * entity.setPrice(this.price); if (this.color != null) {
+		 * entity.setColor(this.color.fromDTO(entity.getColor(), em)); }
+		 * entity.setManaString(this.manaString);
+		 */
+		// entity = em.merge(entity);
 		return entity;
 	}
 
@@ -201,7 +200,7 @@ public class CardDTO implements Serializable {
 
 	public String join(String r[], String d) {
 		if (r.length == 0)
-			return "";
+			return null;
 		StringBuilder sb = new StringBuilder();
 		int i;
 		for (i = 0; i < r.length - 1; i++) {

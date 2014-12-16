@@ -35,7 +35,10 @@ public class PurchaseEndpoint {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response create(PurchaseDTO dto) {
+		System.out.println("dto.getCards().size() " + dto.getCards().size());
 		Purchase entity = dto.fromDTO(null, em);
+		System.out.println("entity.getCards().size() "
+				+ entity.getCards().size());
 		em.persist(entity);
 		return Response.created(
 				UriBuilder.fromResource(PurchaseEndpoint.class)

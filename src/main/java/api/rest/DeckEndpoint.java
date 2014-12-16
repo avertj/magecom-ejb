@@ -9,6 +9,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -23,10 +24,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.query.dsl.QueryBuilder;
 
+import persistance.entity.Card;
 import persistance.entity.Deck;
 import api.rest.dto.DeckDTO;
+import api.rest.dto.search.DeckSearchDTO;
 
 @Stateless
 @Path("/deck")
@@ -145,7 +152,7 @@ public class DeckEndpoint {
 	public Response update(@PathParam("id") Long id, DeckDTO dto) {
 		TypedQuery<Deck> findByIdQuery = em
 				.createQuery(
-						"SELECT DISTINCT d FROM Deck d LEFT JOIN FETCH d.member LEFT JOIN FETCH d.cards WHERE d.id = :entityId ORDER BY d.id",
+						"SELECT DISTINCT d FROM Deck d WHERE d.id = :entityId ORDER BY d.id",
 						Deck.class);
 		findByIdQuery.setParameter("entityId", id);
 		Deck entity;
@@ -162,5 +169,80 @@ public class DeckEndpoint {
 					.entity(e.getEntity()).build();
 		}
 		return Response.noContent().build();
+	}
+
+	@GET
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<DeckDTO> search(@BeanParam DeckSearchDTO search) {
+		FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search
+				.getFullTextEntityManager(em);
+
+		BooleanQuery root = new BooleanQuery();
+
+		QueryBuilder qb = fullTextEntityManager.getSearchFactory()
+				.buildQueryBuilder().forEntity(Card.class).get();
+
+		if (search.getName() != null) {
+			org.apache.lucene.search.Query nameCriteria = qb.keyword()
+					.onField("name").andField("engram").boostedTo(5)
+					.matching(search.getName()).createQuery();
+			root.add(nameCriteria, BooleanClause.Occur.MUST);
+		}
+		if (search.getDescription() != null) {
+			org.apache.lucene.search.Query typeCriteria = qb.phrase()
+					.withSlop(2).onField("description")
+					.sentence(search.getDescription()).createQuery();
+			root.add(typeCriteria, BooleanClause.Occur.MUST);
+		}
+		if (search.getColor() != null) {
+			if (search.getColor().getBlack() != null) {
+				org.apache.lucene.search.Query manaCriteria = qb.keyword()
+						.onField("color.black")
+						.matching(search.getColor().getBlack()).createQuery();
+
+				root.add(manaCriteria, BooleanClause.Occur.MUST);
+			}
+			if (search.getColor().getBlue() != null) {
+				org.apache.lucene.search.Query manaCriteria = qb.keyword()
+						.onField("color.blue")
+						.matching(search.getColor().getBlue()).createQuery();
+
+				root.add(manaCriteria, BooleanClause.Occur.MUST);
+			}
+			if (search.getColor().getGreen() != null) {
+				org.apache.lucene.search.Query manaCriteria = qb.keyword()
+						.onField("color.green")
+						.matching(search.getColor().getGreen()).createQuery();
+
+				root.add(manaCriteria, BooleanClause.Occur.MUST);
+			}
+			if (search.getColor().getRed() != null) {
+				org.apache.lucene.search.Query manaCriteria = qb.keyword()
+						.onField("color.red")
+						.matching(search.getColor().getRed()).createQuery();
+
+				root.add(manaCriteria, BooleanClause.Occur.MUST);
+			}
+			if (search.getColor().getWhite() != null) {
+				org.apache.lucene.search.Query manaCriteria = qb.keyword()
+						.onField("color.white")
+						.matching(search.getColor().getWhite()).createQuery();
+
+				root.add(manaCriteria, BooleanClause.Occur.MUST);
+			}
+		}
+		javax.persistence.Query jpaQuery = fullTextEntityManager
+				.createFullTextQuery(root, Card.class);
+
+		final List<Deck> searchResults = jpaQuery.getResultList();
+		final List<DeckDTO> results = new ArrayList<DeckDTO>();
+		for (Deck searchResult : searchResults) {
+			DeckDTO dto = new DeckDTO(searchResult, false, false);
+			results.add(dto);
+		}
+		// em.getTransaction().commit();
+		// em.close();
+		return results;
 	}
 }

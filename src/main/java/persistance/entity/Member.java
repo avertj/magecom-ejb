@@ -76,7 +76,7 @@ public class Member implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "member")
 	private Set<Purchase> purchases = new HashSet<Purchase>();
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	/* @JoinTable(joinColumns = @JoinColumn(name = "MEMBER", nullable = false)) */
 	@JoinColumn(name = "member_id", nullable = false)
 	private Set<CollectionTuple> collection;
@@ -206,7 +206,15 @@ public class Member implements Serializable {
 	}
 
 	public void setCollection(Set<CollectionTuple> collection) {
+		// this.collection.clear();
+		// this.collection.addAll(collection);
 		this.collection = collection;
+	}
+
+	public void forceSetCollection(Set<CollectionTuple> collection) {
+		this.collection.clear();
+		this.collection.addAll(collection);
+		// this.cards = cards;
 	}
 
 }

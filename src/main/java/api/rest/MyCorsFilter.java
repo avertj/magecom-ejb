@@ -124,16 +124,15 @@ public class MyCorsFilter implements ContainerRequestFilter,
 	public void filter(ContainerRequestContext requestContext,
 			ContainerResponseContext responseContext) throws IOException {
 		String origin = requestContext.getHeaderString(CorsHeaders.ORIGIN);
-		if (origin == null /*
-							 * ||
-							 * requestContext.getMethod().equalsIgnoreCase("OPTIONS"
-							 * )
-							 */
+		if (origin == null
 				|| requestContext.getProperty("cors.failure") != null) {
-			// don't do anything if origin is null, its an OPTIONS request, or
-			// cors.failure is set
 			return;
 		}
+		/*
+		 * if (requestContext.getMethod().equalsIgnoreCase("OPTIONS")) {
+		 * preflight(origin, requestContext); } checkOrigin(requestContext,
+		 * origin);
+		 */
 		responseContext.getHeaders().putSingle(
 				CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 		if (allowCredentials)

@@ -145,7 +145,7 @@ public class ComboEndpoint {
 	public Response update(@PathParam("id") Long id, ComboDTO dto) {
 		TypedQuery<Combo> findByIdQuery = em
 				.createQuery(
-						"SELECT DISTINCT c FROM Combo c LEFT JOIN FETCH c.member LEFT JOIN FETCH c.cards WHERE c.id = :entityId ORDER BY c.id",
+						"SELECT DISTINCT c FROM Combo c WHERE c.id = :entityId ORDER BY c.id",
 						Combo.class);
 		findByIdQuery.setParameter("entityId", id);
 		Combo entity;
