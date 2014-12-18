@@ -78,6 +78,30 @@ public class CardDTO implements Serializable {
 		return entity;
 	}
 
+	public Card newFromDTO(EntityManager em) {
+		Card entity = new Card();
+		entity.setId(this.id);
+		entity.setName(this.name);
+		entity.setType(this.type);
+		entity.setEdition(this.edition);
+		entity.setText(join(this.text, "|"));
+		entity.setFlavorText(join(this.flavorText, "|"));
+		entity.setRarity(this.rarity);
+		entity.setArtist(this.artist);
+		entity.setPower(this.power);
+		entity.setToughness(this.toughness);
+		entity.setX(this.x);
+		entity.setConvertedManaCost(this.convertedManaCost);
+		entity.setPrice(this.price);
+		//if (this.color != null) {
+			entity.setColor(this.color.fromDTO(entity.getColor(), em));
+		//}
+		entity.setManaString(this.manaString);
+
+		// entity = em.merge(entity);
+		return entity;
+	}
+
 	public Long getId() {
 		return this.id;
 	}

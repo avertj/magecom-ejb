@@ -31,6 +31,8 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
 import persistance.entity.Deck;
+import persistance.entity.Member;
+import util.AuthUtils;
 import api.rest.dto.DeckDTO;
 import api.rest.dto.search.DeckSearchDTO;
 
@@ -44,22 +46,34 @@ public class DeckEndpoint {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response create(DeckDTO dto) {
-		Deck entity = dto.fromDTO(null, em);
-		em.persist(entity);
-		return Response.created(
-				UriBuilder.fromResource(DeckEndpoint.class)
-						.path(String.valueOf(entity.getId())).build()).build();
+		Member member = em.find(Member.class, dto.getMember().getId());
+		if (AuthUtils.validate(member, dto.getMember().getToken())) {
+			Deck entity = dto.fromDTO(null, em);
+			em.persist(entity);
+			return Response
+					.created(
+							UriBuilder.fromResource(DeckEndpoint.class)
+									.path(String.valueOf(entity.getId()))
+									.build()).entity(entity).build();
+		} else {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
 	}
 
 	@DELETE
 	@Path("/{id:[0-9][0-9]*}")
-	public Response deleteById(@PathParam("id") Long id) {
+	public Response deleteById(@PathParam("id") Long id,
+			@QueryParam("token") String token) {
 		Deck entity = em.find(Deck.class, id);
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		em.remove(entity);
-		return Response.noContent().build();
+		if (AuthUtils.validate(entity.getMember(), token)) {
+			em.remove(entity);
+			return Response.noContent().build();
+		} else {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
 	}
 
 	@GET
@@ -158,16 +172,21 @@ public class DeckEndpoint {
 		try {
 			entity = findByIdQuery.getSingleResult();
 		} catch (NoResultException nre) {
-			entity = null;
+			return Response.status(Status.NOT_FOUND).build();
 		}
-		entity = dto.fromDTO(entity, em);
-		try {
-			entity = em.merge(entity);
-		} catch (OptimisticLockException e) {
-			return Response.status(Response.Status.CONFLICT)
-					.entity(e.getEntity()).build();
+
+		if (AuthUtils.validate(entity.getMember(), dto.getMember().getToken())) {
+			entity = dto.fromDTO(entity, em);
+			try {
+				entity = em.merge(entity);
+			} catch (OptimisticLockException e) {
+				return Response.status(Status.CONFLICT).entity(e.getEntity())
+						.build();
+			}
+			return Response.noContent().build();
+		} else {
+			return Response.status(Status.UNAUTHORIZED).build();
 		}
-		return Response.noContent().build();
 	}
 
 	@GET

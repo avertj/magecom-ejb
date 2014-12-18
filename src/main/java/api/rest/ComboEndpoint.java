@@ -9,6 +9,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -23,10 +24,17 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.query.dsl.QueryBuilder;
 
 import persistance.entity.Combo;
+import persistance.entity.Member;
+import util.AuthUtils;
 import api.rest.dto.ComboDTO;
+import api.rest.dto.search.ComboSearchDTO;
 
 @Stateless
 @Path("/combo")
@@ -38,22 +46,34 @@ public class ComboEndpoint {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response create(ComboDTO dto) {
-		Combo entity = dto.fromDTO(null, em);
-		em.persist(entity);
-		return Response.created(
-				UriBuilder.fromResource(ComboEndpoint.class)
-						.path(String.valueOf(entity.getId())).build()).build();
+		Member member = em.find(Member.class, dto.getMember().getId());
+		if (AuthUtils.validate(member, dto.getMember().getToken())) {
+			Combo entity = dto.fromDTO(null, em);
+			em.persist(entity);
+			return Response
+					.created(
+							UriBuilder.fromResource(ComboEndpoint.class)
+									.path(String.valueOf(entity.getId()))
+									.build()).entity(entity).build();
+		} else {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
 	}
 
 	@DELETE
 	@Path("/{id:[0-9][0-9]*}")
-	public Response deleteById(@PathParam("id") Long id) {
+	public Response deleteById(@PathParam("id") Long id,
+			@QueryParam("token") String token) {
 		Combo entity = em.find(Combo.class, id);
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		em.remove(entity);
-		return Response.noContent().build();
+		if (AuthUtils.validate(entity.getMember(), token)) {
+			em.remove(entity);
+			return Response.noContent().build();
+		} else {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
 	}
 
 	@GET
@@ -152,15 +172,94 @@ public class ComboEndpoint {
 		try {
 			entity = findByIdQuery.getSingleResult();
 		} catch (NoResultException nre) {
-			entity = null;
+			return Response.status(Status.NOT_FOUND).build();
 		}
-		entity = dto.fromDTO(entity, em);
-		try {
-			entity = em.merge(entity);
-		} catch (OptimisticLockException e) {
-			return Response.status(Response.Status.CONFLICT)
-					.entity(e.getEntity()).build();
+		if (AuthUtils.validate(entity.getMember(), dto.getMember().getToken())) {
+			entity = dto.fromDTO(entity, em);
+			try {
+				entity = em.merge(entity);
+			} catch (OptimisticLockException e) {
+				return Response.status(Status.CONFLICT).entity(e.getEntity())
+						.build();
+			}
+			return Response.noContent().build();
+		} else {
+			return Response.status(Status.UNAUTHORIZED).build();
 		}
-		return Response.noContent().build();
+	}
+
+	@GET
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<ComboDTO> search(@BeanParam ComboSearchDTO search) {
+		FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search
+				.getFullTextEntityManager(em);
+
+		BooleanQuery root = new BooleanQuery();
+
+		QueryBuilder qb = fullTextEntityManager.getSearchFactory()
+				.buildQueryBuilder().forEntity(Combo.class).get();
+
+		if (search.getName() != null) {
+			org.apache.lucene.search.Query nameCriteria = qb.keyword()
+					.onField("name").andField("engram").boostedTo(5)
+					.matching(search.getName()).createQuery();
+			root.add(nameCriteria, BooleanClause.Occur.MUST);
+		}
+		if (search.getDescription() != null) {
+			org.apache.lucene.search.Query typeCriteria = qb.phrase()
+					.withSlop(2).onField("description")
+					.sentence(search.getDescription()).createQuery();
+			root.add(typeCriteria, BooleanClause.Occur.MUST);
+		}
+		if (search.getColor() != null) {
+			if (search.getColor().getBlack() != null) {
+				org.apache.lucene.search.Query manaCriteria = qb.keyword()
+						.onField("color.black")
+						.matching(search.getColor().getBlack()).createQuery();
+
+				root.add(manaCriteria, BooleanClause.Occur.MUST);
+			}
+			if (search.getColor().getBlue() != null) {
+				org.apache.lucene.search.Query manaCriteria = qb.keyword()
+						.onField("color.blue")
+						.matching(search.getColor().getBlue()).createQuery();
+
+				root.add(manaCriteria, BooleanClause.Occur.MUST);
+			}
+			if (search.getColor().getGreen() != null) {
+				org.apache.lucene.search.Query manaCriteria = qb.keyword()
+						.onField("color.green")
+						.matching(search.getColor().getGreen()).createQuery();
+
+				root.add(manaCriteria, BooleanClause.Occur.MUST);
+			}
+			if (search.getColor().getRed() != null) {
+				org.apache.lucene.search.Query manaCriteria = qb.keyword()
+						.onField("color.red")
+						.matching(search.getColor().getRed()).createQuery();
+
+				root.add(manaCriteria, BooleanClause.Occur.MUST);
+			}
+			if (search.getColor().getWhite() != null) {
+				org.apache.lucene.search.Query manaCriteria = qb.keyword()
+						.onField("color.white")
+						.matching(search.getColor().getWhite()).createQuery();
+
+				root.add(manaCriteria, BooleanClause.Occur.MUST);
+			}
+		}
+		javax.persistence.Query jpaQuery = fullTextEntityManager
+				.createFullTextQuery(root, Combo.class);
+
+		final List<Combo> searchResults = jpaQuery.getResultList();
+		final List<ComboDTO> results = new ArrayList<ComboDTO>();
+		for (Combo searchResult : searchResults) {
+			ComboDTO dto = new ComboDTO(searchResult, false);
+			results.add(dto);
+		}
+		// em.getTransaction().commit();
+		// em.close();
+		return results;
 	}
 }

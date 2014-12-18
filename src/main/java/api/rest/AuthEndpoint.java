@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -35,7 +36,7 @@ public class AuthEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(SessionMemberDTO member) {
 		if (member.getUsername() == null || member.getPassword() == null)
-			return Response.status(401).build();
+			return Response.status(Status.UNAUTHORIZED).build();
 		TypedQuery<Member> findByUsername = em.createNamedQuery(
 				"findByUsername", Member.class);
 		findByUsername.setParameter("username", member.getUsername());
@@ -44,10 +45,9 @@ public class AuthEndpoint {
 			String token = AuthUtils.login(m, member.getPassword());
 			return Response.ok(new SessionMemberDTO(m, token)).build();
 		} catch (NoResultException ex) {
-			return Response.status(401).build();
+			return Response.status(Status.UNAUTHORIZED).build();
 		} catch (LoginException e) {
-			return Response.status(401).build(); // erreur de login (code 401 -
-													// Unauthorized)
+			return Response.status(Status.UNAUTHORIZED).build();
 		}
 	}
 
@@ -60,7 +60,7 @@ public class AuthEndpoint {
 		if (AuthUtils.validate(m, member.getToken())) {
 			return Response.ok().build();
 		} else {
-			return Response.status(401).build();
+			return Response.status(Status.UNAUTHORIZED).build();
 		}
 	}
 

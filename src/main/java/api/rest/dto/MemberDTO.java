@@ -16,6 +16,7 @@ import persistance.entity.Deck;
 import persistance.entity.Member;
 import persistance.entity.Purchase;
 import persistance.entity.tuple.CollectionTuple;
+import util.CryptoUtils;
 
 @XmlRootElement
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -112,7 +113,7 @@ public class MemberDTO implements Serializable {
 		if (this.country != null)
 			entity.setCountry(this.country);
 		if (this.password != null)
-			entity.setPassword(this.password);
+			entity.setPassword(CryptoUtils.hash(this.password));
 		// entity.setCreationDate(this.creationDate);
 		/*
 		 * Iterator<Deck> iterDecks = entity.getDecks().iterator(); while

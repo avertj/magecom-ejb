@@ -21,6 +21,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.solr.analysis.ASCIIFoldingFilterFactory;
+import org.apache.solr.analysis.EdgeNGramFilterFactory;
 import org.apache.solr.analysis.LowerCaseFilterFactory;
 import org.apache.solr.analysis.PhoneticFilterFactory;
 import org.apache.solr.analysis.SnowballPorterFilterFactory;
@@ -29,9 +30,11 @@ import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
 import org.hibernate.search.annotations.AnalyzerDefs;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Parameter;
+import org.hibernate.search.annotations.Store;
 import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 
@@ -39,11 +42,18 @@ import persistance.entity.tuple.ComboTuple;
 
 @Entity
 @Indexed
-@AnalyzerDefs({ @AnalyzerDef(name = "fr.combo", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
-		@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
-		@TokenFilterDef(factory = LowerCaseFilterFactory.class),
-		@TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @Parameter(name = "encoder", value = "SOUNDEX") }),
-		@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }), }) })
+@AnalyzerDefs({
+		@AnalyzerDef(name = "fr.combo", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+				@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
+				@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+				@TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @Parameter(name = "encoder", value = "SOUNDEX") }),
+				@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }), }),
+		@AnalyzerDef(name = "fr.combo.engram", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+				@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
+				@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+				@TokenFilterDef(factory = EdgeNGramFilterFactory.class, params = {
+						@Parameter(name = "maxGramSize", value = "10"),
+						@Parameter(name = "minGramSize", value = "3") }) }) })
 public class Combo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -54,8 +64,9 @@ public class Combo implements Serializable {
 	private Long id;
 
 	@Column(updatable = true, nullable = false)
-	@Field
-	@Analyzer(definition = "fr.combo")
+	@Fields({
+			@Field(store = Store.YES, analyzer = @Analyzer(definition = "fr.combo")),
+			@Field(name = "engram", analyzer = @Analyzer(definition = "fr.combo.engram")) })
 	private String name;
 
 	@Column(columnDefinition = "TEXT", updatable = true, nullable = true)
@@ -77,6 +88,7 @@ public class Combo implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "combo_id", nullable = false)
+	// @OrderBy("card.convertedManaCost asc")
 	private Set<ComboTuple> cards = new HashSet<ComboTuple>();
 
 	// ManyToMany cards (+ cardsQuantity);

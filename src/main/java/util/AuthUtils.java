@@ -1,11 +1,8 @@
 package util;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import javax.security.auth.login.LoginException;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 import persistance.entity.Member;
 
@@ -15,31 +12,15 @@ public class AuthUtils {
 
 	public static String login(Member member, String password)
 			throws LoginException {
-		try {
-			if (member.getPassword().equals(password)) {
-				MessageDigest md = MessageDigest.getInstance("SHA");
-				md.update(salt.getBytes());
-				md.update(member.getUsername().getBytes());
-
-				String hex = (new HexBinaryAdapter()).marshal(md.digest());
-				return hex;
-			}
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+		if (member.getPassword().equals(CryptoUtils.hash(password))) {
+			return CryptoUtils.hash(salt + member.getUsername());
 		}
 		throw new LoginException("Wrong login / password");
 	}
 
 	public static boolean validate(Member member, String token) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("SHA");
-			md.update(salt.getBytes());
-			md.update(member.getUsername().getBytes());
-			String hex = (new HexBinaryAdapter()).marshal(md.digest());
-			return hex.equals(token);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return false;
+
+		return CryptoUtils.hash(salt + member.getUsername()).equals(token);
+
 	}
 }

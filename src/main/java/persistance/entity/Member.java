@@ -68,12 +68,15 @@ public class Member implements Serializable {
 	private Date creationDate;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "member")
+	// @OrderBy("creationDate desc")
 	private Set<Deck> decks = new HashSet<Deck>();
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "member")
+	// @OrderBy("creationDate desc")
 	private Set<Combo> combos = new HashSet<Combo>();
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "member")
+	// @OrderBy("creationDate desc")
 	private Set<Purchase> purchases = new HashSet<Purchase>();
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

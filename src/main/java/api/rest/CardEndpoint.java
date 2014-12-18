@@ -6,15 +6,12 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -44,14 +41,14 @@ public class CardEndpoint {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response create(CardDTO dto) {
-		Card entity = dto.fromDTO(null, em);
+		Card entity = dto.newFromDTO(em);
 		em.persist(entity);
 		return Response.created(
 				UriBuilder.fromResource(CardEndpoint.class)
 						.path(String.valueOf(entity.getId())).build()).build();
 	}
 
-	@DELETE
+	/*@DELETE
 	@Path("/{id:[0-9][0-9]*}")
 	public Response deleteById(@PathParam("id") Long id) {
 		Card entity = em.find(Card.class, id);
@@ -60,7 +57,7 @@ public class CardEndpoint {
 		}
 		em.remove(entity);
 		return Response.noContent().build();
-	}
+	}*/
 
 	@GET
 	@Path("/{id:[0-9][0-9]*}")
@@ -105,7 +102,7 @@ public class CardEndpoint {
 		return results;
 	}
 
-	@PUT
+	/*@PUT
 	@Path("/{id:[0-9][0-9]*}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response update(@PathParam("id") Long id, CardDTO dto) {
@@ -128,7 +125,7 @@ public class CardEndpoint {
 					.entity(e.getEntity()).build();
 		}
 		return Response.noContent().build();
-	}
+	}*/
 
 	@GET
 	@Path("/search")

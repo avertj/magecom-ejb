@@ -43,17 +43,17 @@ import persistance.entity.tuple.DeckTuple;
 @Entity
 @Indexed
 @AnalyzerDefs({
-	@AnalyzerDef(name = "fr.deck", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
-			@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
-			@TokenFilterDef(factory = LowerCaseFilterFactory.class),
-			@TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @Parameter(name = "encoder", value = "SOUNDEX") }),
-			@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }), }),
-	@AnalyzerDef(name = "fr.deck.engram", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
-			@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
-			@TokenFilterDef(factory = LowerCaseFilterFactory.class),
-			@TokenFilterDef(factory = EdgeNGramFilterFactory.class, params = {
-					@Parameter(name = "maxGramSize", value = "10"),
-					@Parameter(name = "minGramSize", value = "3") }) }) })
+		@AnalyzerDef(name = "fr.deck", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+				@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
+				@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+				@TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @Parameter(name = "encoder", value = "SOUNDEX") }),
+				@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = { @Parameter(name = "language", value = "French") }), }),
+		@AnalyzerDef(name = "fr.deck.engram", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+				@TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
+				@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+				@TokenFilterDef(factory = EdgeNGramFilterFactory.class, params = {
+						@Parameter(name = "maxGramSize", value = "10"),
+						@Parameter(name = "minGramSize", value = "3") }) }) })
 public class Deck implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -65,8 +65,8 @@ public class Deck implements Serializable {
 
 	@Column(updatable = true, nullable = false)
 	@Fields({
-		@Field(store = Store.YES, analyzer = @Analyzer(definition = "fr.deck")),
-		@Field(name = "engram", analyzer = @Analyzer(definition = "fr.deck.engram")) })
+			@Field(store = Store.YES, analyzer = @Analyzer(definition = "fr.deck")),
+			@Field(name = "engram", analyzer = @Analyzer(definition = "fr.deck.engram")) })
 	private String name;
 
 	@Column(columnDefinition = "TEXT", updatable = true, nullable = true)
@@ -88,6 +88,8 @@ public class Deck implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "deck_id", nullable = false)
+	// @Fetch(value = FetchMode.SUBSELECT)
+	// @OrderBy("card.convertedManaCost asc")
 	private Set<DeckTuple> cards = new HashSet<DeckTuple>();
 
 	// ManyToMany cards (+ cardsQuantity + favorite);

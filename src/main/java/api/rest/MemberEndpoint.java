@@ -43,10 +43,15 @@ public class MemberEndpoint {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response create(MemberDTO dto) {
-		Member entity = dto.fromDTO(null, em);
+		Member entity;
 		try {
+			entity = dto.fromDTO(null, em);
 			em.persist(entity);
 			em.flush();
+			return Response.created(
+					UriBuilder.fromResource(MemberEndpoint.class)
+							.path(String.valueOf(entity.getId())).build())
+					.build();
 		} catch (PersistenceException e) {
 			Throwable t = e.getCause();
 			if (t instanceof ConstraintViolationException) {
@@ -58,25 +63,28 @@ public class MemberEndpoint {
 					String field = message.substring(
 							(message.indexOf("(") + 1), message.indexOf(")"));
 					System.out.println(field);
-					return Response.status(409).entity("{\"field\": \"" + field + "\"}").build(); //conflit
+					return Response.status(Status.CONFLICT)
+							.entity("{\"field\": \"" + field + "\"}").build(); // conflit
 				}
 			}
 		}
-
-		return Response.created(
-				UriBuilder.fromResource(MemberEndpoint.class)
-						.path(String.valueOf(entity.getId())).build()).build();
+		return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 	}
 
 	@DELETE
 	@Path("/{id:[0-9][0-9]*}")
-	public Response deleteById(@PathParam("id") Long id) {
+	public Response deleteById(@PathParam("id") Long id,
+			@QueryParam("token") String token) {
 		Member entity = em.find(Member.class, id);
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		em.remove(entity);
-		return Response.noContent().build();
+		if (AuthUtils.validate(entity, token)) {
+			em.remove(entity);
+			return Response.noContent().build();
+		} else {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
 	}
 
 	@GET
@@ -166,16 +174,20 @@ public class MemberEndpoint {
 		try {
 			entity = findByIdQuery.getSingleResult();
 		} catch (NoResultException nre) {
-			entity = null;
+			return Response.status(Status.NOT_FOUND).build();
 		}
-		entity = dto.fromDTO(entity, em);
-		try {
-			entity = em.merge(entity);
-		} catch (OptimisticLockException e) {
-			return Response.status(Response.Status.CONFLICT)
-					.entity(e.getEntity()).build();
+		if (AuthUtils.validate(entity, dto.getToken())) {
+			try {
+				entity = dto.fromDTO(entity, em);
+				entity = em.merge(entity);
+			} catch (OptimisticLockException e) {
+				return Response.status(Status.CONFLICT).entity(e.getEntity())
+						.build();
+			}
+			return Response.noContent().build();
+		} else {
+			return Response.status(Status.UNAUTHORIZED).build();
 		}
-		return Response.noContent().build();
 	}
 
 }
